@@ -109,6 +109,7 @@ describe("ownership", () => {
   it("an order addressed to Orlov that touches fuel makes Chen support, not lead", () => {
     const thaw = vector({
       objective: "repair",
+      target: "pipes",
       sector: "works",
       owner: "engineering",
       scope: ["engineering", "logistics"],
@@ -119,8 +120,11 @@ describe("ownership", () => {
     s.world.water.pipesFrozen = true;
     const s2 = applyOrder(s, "Orlov, thaw the pipes today. Use fuel for the heaters if you must.", thaw);
     const c = chosen(s2);
-    // Both are repairs to the water system; the vector cannot tell pipes from pumps, and the pumps are at 40%.
-    expect(["eng_thaw_pipes", "eng_repair_pumps"]).toContain(c.engineering.action);
+    // The pumps are at 40% and both are repairs to the water system; the target says pipes, so Orlov thaws them (D35).
+    expect(c.engineering.action).toBe("eng_thaw_pipes");
+    const orlov = decideAll(s2, s2.world).find((x) => x.decision.department === "engineering")!.decision;
+    const pumps = orlov.candidates.find((x) => x.action === "eng_repair_pumps")!;
+    expect(pumps.terms.find((t) => t.name.startsWith("target"))?.value).toBeLessThan(0);
     expect(c.logistics.action).not.toBe("log_repair_truck");
     const chen = decideAll(s2, s2.world).find((x) => x.decision.department === "logistics")!.decision;
     const truck = chen.candidates.find((x) => x.action === "log_repair_truck")!;

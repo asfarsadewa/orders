@@ -26,15 +26,19 @@ export function seedFacts(seed: string): { weather: ReturnType<typeof forecast>;
   return { weather: forecast(scoped(seed, "weather"), RUN_DAYS + 1), contact: hiddenContact(scoped(seed, "contact")) };
 }
 
-/** Which crises the chosen actions speak to, so neglect is counted honestly. */
+/**
+ * Which crises the executed actions work on, by each action's own list, so
+ * neglect is counted against the work actually done and not against the
+ * department being busy (D34).
+ */
 function attended(world: World, decided: Decided[]): Set<string> {
   const out = new Set<string>();
-  for (const c of world.crises) {
-    const t = CRISIS_BY_ID.get(c.template);
-    if (!t) continue;
-    for (const x of decided) {
-      if (x.decision.basis === "routine" || x.decision.basis === "clarification") continue;
-      if (t.concerns.includes(x.decision.department)) out.add(c.id);
+  for (const x of decided) {
+    if (x.decision.basis === "routine" || x.decision.basis === "clarification" || !x.decision.executed) continue;
+    for (const c of world.crises) {
+      if (!x.def.crises?.includes(c.template)) continue;
+      if (x.def.attends && !x.def.attends(c, world)) continue;
+      out.add(c.id);
     }
   }
   return out;
@@ -66,8 +70,12 @@ export function executeDay(state: GameState): DayOutcome {
       rng: scoped(state.seed, "act", state.day, d),
       granted: alloc.granted,
     };
-    def.apply(world, rec, alloc.fraction, ctx);
+    // The execution contract (D33): an action with a request runs only when the pool met enough of it.
+    const asks = def.requests(world).some((r) => r.amount > 0);
+    const executed = !asks || (alloc.fraction > 0 && alloc.fraction >= (def.minEffort ?? 0));
+    if (executed) def.apply(world, rec, alloc.fraction, ctx);
     x.decision.allocation = alloc;
+    x.decision.executed = executed;
     x.decision.effects = rec.effects;
     if (x.decision.basis === "order") crewCasualties[d] += world.crews[d].injured + world.crews[d].dead - hurtBefore;
   }

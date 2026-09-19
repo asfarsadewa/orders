@@ -42,3 +42,8 @@ Construction order follows the spec's section 52: retire uncertainty in dependen
 
 - `scripts/sim.ts` (scripted commanders, no model), `scripts/morale.ts` (effects by cause), `scripts/play.ts` (authored orders through the live judge). First pass recorded in DECISIONS D21.
 - Next: human playtests; revisit the clarification floor, fuel economics and the pyrrhic thresholds from real transcripts; consider Jev candidate selection for report lines.
+
+## Stage 14: Engine contracts from the review. Done.
+
+- A second agent's review found five handoff failures: rejected messages in scoring, standing orders matched by position, an allocator that reserved for actions that could not run, unconditional effects at zero allocation, and crisis attendance by department. Regressions in `test/review-regressions.test.ts`; decisions D30 to D34.
+- The order representation gained a `target` Choice (D35), calibrated 373/373. Open: quantities in caps, fallback binding, per-clause owners.

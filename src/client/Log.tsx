@@ -14,6 +14,7 @@ function Vector({ m }: { m: Measurements }) {
       <span className="sc">
         {m.objective.choice} {f2(m.objective.probabilities[m.objective.choice] ?? 0)}
       </span>
+      {m.target.choice !== "none" && <span className="sc">{m.target.choice}</span>}
       {m.sector.choice !== "none" && <span className="sc">{m.sector.choice}</span>}
       {SCORE_IDS.map((id) => (
         <span className="sc" key={id}>

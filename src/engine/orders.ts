@@ -3,7 +3,7 @@
 // department keeps. All of it is arithmetic on measurements.
 
 import { THRESHOLDS } from "./thresholds";
-import { DEPARTMENTS, PRIORITY_NOULS, type Department, type Measurements, type Objective, type OrderRecord, type PrecedentMemory, type PriorityNoul, type StandingOrder } from "./types";
+import { DEPARTMENTS, PRIORITY_NOULS, type Department, type Measurements, type Objective, type OrderRecord, type PrecedentMemory, type PriorityNoul, type StandingOrder, type StandingOrderMeasure } from "./types";
 
 /** A Noul above its gate reads as a strength in 0..1; below it reads as nothing. */
 export function gate(p: number, threshold: number): number {
@@ -76,14 +76,21 @@ export function activeStanding(standing: readonly StandingOrder[]): StandingOrde
 }
 
 /**
- * Marks standing orders that the new order overrides. `m.standing[i]` lines up
- * with `activeStanding(standing)[i]` at the time the order was measured.
+ * The measure a new order carries about one standing order. Measurements bind
+ * by standing-order id (D31); streams measured before that bind by position in
+ * the active list, which is only exact while nothing in it changes.
  */
+export function standingMeasure(m: Measurements, so: StandingOrder, index: number): StandingOrderMeasure | undefined {
+  if (m.standing.some((s) => s.standingOrderId !== undefined)) return m.standing.find((s) => s.standingOrderId === so.id);
+  return m.standing[index];
+}
+
+/** Marks standing orders that the new order overrides. */
 export function applyOverrides(standing: StandingOrder[], m: Measurements, byOrderId: string, day: number): string[] {
   const active = activeStanding(standing);
   const superseded: string[] = [];
   active.forEach((so, i) => {
-    const s = m.standing[i];
+    const s = standingMeasure(m, so, i);
     const revokeAll = m.nouls.revokes_standing_orders >= THRESHOLDS.revokesStanding;
     if ((s && s.override >= THRESHOLDS.standingOverride) || revokeAll) {
       so.supersededBy = byOrderId;
@@ -99,7 +106,7 @@ export function standingConflicts(standing: readonly StandingOrder[], m: Measure
   const active = activeStanding(standing);
   const out: { so: StandingOrder; conflict: number }[] = [];
   active.forEach((so, i) => {
-    const s = m.standing[i];
+    const s = standingMeasure(m, so, i);
     if (s && s.conflict >= THRESHOLDS.standingConflict && s.override < THRESHOLDS.standingOverride) out.push({ so, conflict: s.conflict });
   });
   return out;

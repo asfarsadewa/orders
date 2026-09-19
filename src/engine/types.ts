@@ -72,6 +72,10 @@ export type Objective = (typeof OBJECTIVES)[number];
 export const TIMEFRAMES = ["immediate", "today", "coming_days", "unstated"] as const;
 export type Timeframe = (typeof TIMEFRAMES)[number];
 
+/** The one thing an order is about: the equipment, stock, people or hazard to act on (D35). */
+export const TARGETS = ["generator", "battery", "power", "pumps", "pipes", "water", "fuel", "food", "medicine", "trucks", "patients", "trapped", "colonists", "crew", "gate", "contact", "fire", "roof"] as const;
+export type Target = (typeof TARGETS)[number];
+
 export const SCOPE_NOULS = ["concerns_security", "concerns_logistics", "concerns_medical", "concerns_engineering"] as const;
 
 export const PRIORITY_NOULS = [
@@ -145,6 +149,8 @@ export interface ScoreMeasure {
 
 /** Per active standing order, in the order they were sent. */
 export interface StandingOrderMeasure {
+  /** The standing order this measure is about. Streams measured before D31 have none and bind by position. */
+  standingOrderId?: string;
   conflict: number;
   override: number;
 }
@@ -153,6 +159,8 @@ export interface Measurements {
   objective: ChoiceMeasure<Objective>;
   sector: ChoiceMeasure<SectorId | "none">;
   timeframe: ChoiceMeasure<Timeframe>;
+  /** The one thing the order is about, or none. */
+  target: ChoiceMeasure<Target | "none">;
   /** The one department the order is addressed to by name or role, or none. */
   owner: ChoiceMeasure<Department | "none">;
   nouls: Record<NoulId, number>;
@@ -351,6 +359,8 @@ export interface ActionSpec {
   constraints?: Partial<Record<ConstraintNoul, number>>;
   /** Sectors where it makes sense; empty means anywhere. */
   sectors?: SectorId[];
+  /** What the action works on. An order about something else costs the action `W.targetMismatch` (D35). */
+  targets?: Target[];
   /** 0 safe .. 1 someone will probably get hurt. */
   risk: number;
   /** How fast it pays off; higher is better under urgency. */
@@ -359,6 +369,10 @@ export interface ActionSpec {
   initiativeBase: number;
   /** True for the routine and for request_clarification: never chosen by initiative alone. */
   passive?: boolean;
+  /** Fraction of the request below which the action does not run at all. Discrete effects (a flag, a reveal) need one; continuous work scales instead (D33). */
+  minEffort?: number;
+  /** Crisis templates this action works on. Only these count as attended when the action runs (D34). */
+  crises?: string[];
   /** What the action is about, for choosing lines that fit: reserve, fuel, medicine, force, heat, machine, people. */
   tags?: string[];
 }
@@ -392,6 +406,8 @@ export interface OrderRecord {
   text: string;
   measurements: Measurements;
   scope: Department[];
+  /** What the text was. Only a command enters officer scoring and allocation; the others cost the slot and draw a routine answer (D30). */
+  kind: "command" | "question" | "system_message";
   standingOrderId: string | null;
   /** Ids of pending clarifications this order answered. */
   answered: string[];
@@ -439,6 +455,8 @@ export interface Decision {
   action: string;
   /** Why the officer acted at all: an order, initiative on a crisis, or routine. */
   basis: "order" | "initiative" | "routine" | "clarification";
+  /** False when the pool gave too little for the action to run at all: nothing was applied (D33). */
+  executed?: boolean;
   candidates: Candidate[];
   clarify?: { reason: ClarifyReason; pendingId: string };
   /** Speech act and line selected for the acknowledgement or report. */
@@ -459,7 +477,7 @@ export interface Effect {
 
 export interface Allocations {
   /** Requests per action per resource with the granted fraction. */
-  rows: { department: Department; action: string; key: ResourceKey; requested: number; granted: number; available: number }[];
+  rows: { department: Department; action: string; key: ResourceKey; requested: number; granted: number; available: number; used: number }[];
   /** Which orders' priorities decided precedence, or "initiative". */
   ruledBy: string;
 }

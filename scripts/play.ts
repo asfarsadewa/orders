@@ -87,7 +87,7 @@ async function main(): Promise<void> {
       s = applyOrder(s, text, m);
       const o = s.today[s.today.length - 1];
       console.log(`  > ${text}`);
-      console.log(`    [${ms} ms] ${m.objective.choice} ${m.objective.probabilities[m.objective.choice]?.toFixed(2)} · ${m.sector.choice} · scope ${o.scope.join(",")} · clarity ${m.scores.clarity.score.toFixed(1)} · ${crossed(m).slice(0, 7).map((c) => `${c.id} ${c.p.toFixed(2)}`).join(", ")}${m.standing.length ? ` · so ${m.standing.map((x) => `${x.conflict.toFixed(2)}/${x.override.toFixed(2)}`).join(" ")}` : ""}${m.answers.length ? ` · answers ${m.answers.map((a) => a.toFixed(2)).join(" ")}` : ""}${o.standingOrderId ? ` · ${o.standingOrderId}` : ""}`);
+      console.log(`    [${ms} ms] ${m.objective.choice} ${m.objective.probabilities[m.objective.choice]?.toFixed(2)} · ${m.target.choice} · ${m.sector.choice} · scope ${o.scope.join(",")} · clarity ${m.scores.clarity.score.toFixed(1)} · ${crossed(m).slice(0, 7).map((c) => `${c.id} ${c.p.toFixed(2)}`).join(", ")}${m.standing.length ? ` · so ${m.standing.map((x) => `${x.conflict.toFixed(2)}/${x.override.toFixed(2)}`).join(" ")}` : ""}${m.answers.length ? ` · answers ${m.answers.map((a) => a.toFixed(2)).join(" ")}` : ""}${o.standingOrderId ? ` · ${o.standingOrderId}` : ""}`);
       for (const u of s.todayUtterances.filter((u) => u.orderId === o.id)) console.log(`    ${OFFICERS[u.department].name}: ${u.act} "${u.text}" ${u.notes.join(" ")}`);
     }
     s = endDay(s);

@@ -92,12 +92,12 @@ export function applyOrder(state: GameState, text: string, measurements: Measure
   const next: GameState = structuredClone(state);
   const id = `O-${next.day}-${next.today.length + 1}`;
   const scope = scopeOf(measurements);
-  const record: OrderRecord = { id, day: next.day, text, measurements, scope, standingOrderId: null, answered: [] };
+  const kind: OrderRecord["kind"] = addressesSystem(measurements) ? "system_message" : isQuestion(measurements) ? "question" : "command";
+  const record: OrderRecord = { id, day: next.day, text, measurements, scope, kind, standingOrderId: null, answered: [] };
   next.events.push({ kind: "order", day: next.day, text, measurements });
 
   const utterances: Utterance[] = [];
-  const meta = addressesSystem(measurements) || isQuestion(measurements);
-  if (meta) {
+  if (kind !== "command") {
     // Not an order to the colony. It costs the slot and nobody moves.
     next.today.push(record);
     for (const d of scope.length ? scope : (["security", "logistics", "medical", "engineering"] as Department[]).slice(0, 1)) {
@@ -180,6 +180,8 @@ function reportUtterances(state: GameState, decisions: Decision[], crewCasualtie
       notes.push(state.pending.some((p) => p.department === d && p.day === dec.day && p.answeredBy) ? "= You answered the question. The officer acted on the answer." : "= No answer came. The officer held to routine.");
     } else if (dec.basis === "routine") {
       act = "routine";
+    } else if (dec.executed === false) {
+      act = "report_failure";
     } else if (crewCasualties[d] > 0 || unexpected) {
       act = "report_unexpected";
     } else if (fraction >= 0.8) act = "report_success";
@@ -189,6 +191,7 @@ function reportUtterances(state: GameState, decisions: Decision[], crewCasualtie
       const short = dec.allocation.requests.filter((r) => (dec.allocation!.granted[r.key] ?? 1) < 0.999).map((r) => `${r.key} ${Math.round((dec.allocation!.granted[r.key] ?? 0) * 100)}%`);
       if (short.length) notes.push(`= granted ${short.join(", ")}`);
     }
+    if (dec.executed === false) notes.push(`= Nothing was done. The pool met ${Math.round(fraction * 100)}% of the request${def?.minEffort ? `. The action needs ${Math.round(def.minEffort * 100)}%` : ""}.`);
     for (const e of dec.effects.slice(0, 6)) notes.push(`= ${e.note}`);
     if (dec.basis === "initiative") notes.push("= No order. The officer acted on initiative.");
     const line = pickLine(state.seed, `report-${dec.day}`, d, act, lastLine(state, d), def?.tags);

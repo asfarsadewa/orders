@@ -2,19 +2,21 @@
 // call Jev; they describe what Jev would have said and check what the game does.
 
 import { emptyMeasurements } from "../src/judge/questions";
-import type { Measurements, NoulId, Objective, ScoreId, SectorId, Timeframe } from "../src/engine/types";
+import type { Measurements, NoulId, Objective, ScoreId, SectorId, Target, Timeframe } from "../src/engine/types";
 
 export interface VectorSpec {
   objective?: Objective;
   objectiveP?: number;
   sector?: SectorId | "none";
+  /** The thing the order is about, at 0.9. */
+  target?: Target | "none";
   timeframe?: Timeframe;
   /** The department the order names, at 0.9. */
   owner?: "security" | "logistics" | "medical" | "engineering";
   /** Nouls to set; unset ones stay 0.05. */
   nouls?: Partial<Record<NoulId, number>>;
   scores?: Partial<Record<ScoreId, number>>;
-  standing?: { conflict: number; override: number }[];
+  standing?: { conflict: number; override: number; standingOrderId?: string }[];
   answers?: number[];
   /** Departments the order concerns, at 0.9. */
   scope?: ("security" | "logistics" | "medical" | "engineering")[];
@@ -33,6 +35,7 @@ export function vector(spec: VectorSpec): Measurements {
   }
   if (spec.sector) m.sector = { choice: spec.sector, confidence: 0.9, probabilities: { [spec.sector]: 0.9 } };
   if (spec.timeframe) m.timeframe = { choice: spec.timeframe, confidence: 0.9, probabilities: { [spec.timeframe]: 0.9 } };
+  if (spec.target) m.target = { choice: spec.target, confidence: 0.9, probabilities: { [spec.target]: 0.9, none: 0.1 } };
   if (spec.owner) m.owner = { choice: spec.owner, confidence: 0.9, probabilities: { [spec.owner]: 0.9, none: 0.1 } };
   for (const d of spec.scope ?? []) m.nouls[`concerns_${d}`] = 0.9;
   for (const [k, v] of Object.entries(spec.nouls ?? {})) m.nouls[k as NoulId] = v as number;

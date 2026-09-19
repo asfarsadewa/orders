@@ -132,6 +132,7 @@ export function Inspector({ state, target, onClose }: { state: GameState; target
                     <span className="sc">
                       objective {o.measurements.objective.choice} {f2(o.measurements.objective.probabilities[o.measurements.objective.choice] ?? 0)}
                     </span>
+                    <span className="sc">target {o.measurements.target.choice}</span>
                     <span className="sc">sector {o.measurements.sector.choice}</span>
                     {SCORE_IDS.map((id) => (
                       <span className="sc" key={id}>

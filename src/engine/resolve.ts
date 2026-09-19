@@ -30,6 +30,7 @@ import {
   type ResourceKey,
   type SectorId,
   type StandingOrder,
+  type Target,
   type UtilityTerm,
   type World,
 } from "./types";
@@ -44,6 +45,10 @@ export const W = {
   risk: 1.2,
   sectorMatch: 0.3,
   sectorMismatch: -0.4,
+  /** The order names a thing (pipes, the gate, the patients) and the action works on it, or not (D35). */
+  targetMatch: 0.6,
+  targetMismatch: -0.7,
+  targetGate: 0.5,
   discretion: 0.8,
   standing: 0.8,
   precedent: 0.7,
@@ -183,6 +188,13 @@ export function score(ctx: OfficerContext, a: ActionDef): Candidate {
       const hit = a.sectors.includes(m.sector.choice as SectorId);
       push(`sector (${o.record.id})`, (hit ? W.sectorMatch : W.sectorMismatch) * o.weight, hit ? `order names ${m.sector.choice}; this action works there` : `order names ${m.sector.choice}; this action works in ${a.sectors.join(", ")}`);
     }
+    if (m.target.choice !== "none" && a.targets) {
+      const tp = m.target.probabilities[m.target.choice] ?? 0;
+      if (tp >= W.targetGate) {
+        const hit = a.targets.includes(m.target.choice as Target);
+        push(`target (${o.record.id})`, (hit ? W.targetMatch : W.targetMismatch) * o.weight, hit ? `order is about ${m.target.choice} ${f2(tp)}; this action works on it` : `order is about ${m.target.choice} ${f2(tp)}; this action works on ${a.targets.join(", ")}`);
+      }
+    }
     const disc = m.scores.delegated_discretion.score / SCORE_MAX;
     const urge = a.urge(world);
     if (disc > 0 && urge > 0 && !a.passive) {
@@ -240,6 +252,7 @@ export function clarifyNeed(ctx: OfficerContext, best: Candidate | null): Clarif
   const m = orders[orders.length - 1].record.measurements;
   const clarity = m.scores.clarity.score;
   const clarityNeed = Math.max(0, (THRESHOLDS.lowClarity - clarity) / THRESHOLDS.lowClarity);
+  const noTarget = m.sector.choice === "none" && m.target.choice === "none";
   const under = gate(m.nouls.underspecified, THRESHOLDS.underspecified);
   const contra = gate(m.nouls.contradictory, THRESHOLDS.contradictory);
   const resources = (["priority_fuel", "priority_water", "priority_power", "priority_food", "priority_medicine"] as const).filter((p) => m.nouls[p] >= THRESHOLDS.priority).length;
@@ -262,7 +275,7 @@ export function clarifyNeed(ctx: OfficerContext, best: Candidate | null): Clarif
     return v;
   };
   const parts: [number, ClarifyReason][] = [
-    [add("low clarity", doc.literalness * 0.8 * clarityNeed * scale, `clarity ${f2(clarity)}/3 below ${THRESHOLDS.lowClarity} × literalness ${f2(doc.literalness)}`, m.sector.choice === "none" ? "target" : "scope"), m.sector.choice === "none" ? "target" : "scope"],
+    [add("low clarity", doc.literalness * 0.8 * clarityNeed * scale, `clarity ${f2(clarity)}/3 below ${THRESHOLDS.lowClarity} × literalness ${f2(doc.literalness)}`, noTarget ? "target" : "scope"), noTarget ? "target" : "scope"],
     [add("underspecified", doc.literalness * 0.7 * under * scale, `underspecified ${f2(m.nouls.underspecified)} × literalness ${f2(doc.literalness)}`, "scope"), "scope"],
     [add("contradictory", doc.literalness * 1.4 * contra * scale, `contradictory ${f2(m.nouls.contradictory)} × literalness ${f2(doc.literalness)}`, "contradiction"), "contradiction"],
     [add("resource precedence", doc.literalness * 0.6 * resourceAmb * scale * 2, `${resources} resources named, gives_clear_priority ${f2(m.nouls.gives_clear_priority)} × caution ${f2(doc.resourceCaution)}`, "resource_precedence"), "resource_precedence"],
@@ -287,12 +300,17 @@ export interface Decided {
   lead: OrderRecord | null;
 }
 
+/** Only a command is an order to act on; a question or a message to the model costs its slot and nothing more (D30). */
+export function isCommand(o: OrderRecord): boolean {
+  return o.kind !== "question" && o.kind !== "system_message";
+}
+
 /** Decides every officer's action for the day. Pure. */
 export function decideAll(state: GameState, world: World): Decided[] {
   const standing = activeStanding(state.standing);
   const out: Decided[] = [];
   for (const d of DEPARTMENTS) {
-    const today = state.today.filter((o) => o.scope.includes(d)).map((o) => ({ record: o, weight: 1 }));
+    const today = state.today.filter((o) => isCommand(o) && o.scope.includes(d)).map((o) => ({ record: o, weight: 1 }));
     // An answered clarification brings its original order back for today at reduced weight.
     for (const p of state.pending) {
       if (p.department !== d || !p.answeredBy) continue;
@@ -351,13 +369,17 @@ function precedence(state: GameState, d: Department, a: ActionDef): number {
   let s = 0;
   const doc = OFFICERS[d].doctrine;
   for (const o of state.today) {
-    if (!o.scope.includes(d)) continue;
+    if (!isCommand(o) || !o.scope.includes(d)) continue;
     s += priorityMatch(o.measurements, a, doc).value + objectiveMatch(o.measurements, a) * 0.5;
   }
   return s;
 }
 
-/** Splits the shared pool among the chosen actions. */
+/**
+ * Splits the shared pool among the chosen actions. Each action first finds the
+ * fraction its whole request supports, then takes only what that fraction
+ * needs, so an action that cannot run takes nothing from anyone (D32).
+ */
 export function allocate(state: GameState, world: World, decided: Decided[]): { allocations: Allocations; perDepartment: Record<Department, Allocation> } {
   const pool: Record<ResourceKey, number> = {
     fuel: fuelForTrucks(world),
@@ -380,27 +402,23 @@ export function allocate(state: GameState, world: World, decided: Decided[]): { 
     const d = x.decision.department;
     // A clarification does the routine instead.
     const def = x.decision.basis === "clarification" ? routineFor(d) : x.def;
-    const requests = def.requests(world);
+    const requests = def.requests(world).filter((r) => r.amount > 0);
     const granted: Allocation["granted"] = {};
-    let fraction = 1;
-    for (const r of requests) {
-      if (r.amount <= 0) continue;
-      if (r.key === "crewHours") {
-        const dept = r.department ?? d;
-        const avail = hoursPool[dept];
-        const g = Math.min(1, avail / r.amount);
-        hoursPool[dept] = Math.max(0, avail - r.amount * g);
-        granted.crewHours = g;
-        rows.push({ department: d, action: def.id, key: "crewHours", requested: r.amount, granted: g, available: avail });
-        fraction = Math.min(fraction, g);
-        continue;
-      }
-      const avail = pool[r.key];
-      const g = Math.min(1, avail / r.amount);
-      pool[r.key] = Math.max(0, avail - r.amount * g);
+    // 1. What each resource supports on its own. Trucks are whole: two asked, one in the bay, half met.
+    const support = requests.map((r) => {
+      const avail = r.key === "crewHours" ? hoursPool[r.department ?? d] : pool[r.key];
+      const g = r.key === "vehicles" ? Math.min(1, Math.floor(Math.min(avail, r.amount) + 1e-9) / r.amount) : Math.min(1, avail / r.amount);
+      return { r, avail, g };
+    });
+    // 2. The action runs at the weakest resource's fraction.
+    const fraction = support.reduce((f, s) => Math.min(f, s.g), 1);
+    // 3. Take only what that fraction needs. Any part of a trip needs a whole truck.
+    for (const { r, avail, g } of support) {
+      const used = fraction <= 0 ? 0 : r.key === "vehicles" ? Math.ceil(r.amount * fraction - 1e-9) : Math.round(r.amount * fraction * 1000) / 1000;
+      if (r.key === "crewHours") hoursPool[r.department ?? d] = Math.max(0, avail - used);
+      else pool[r.key] = Math.max(0, avail - used);
       granted[r.key] = g;
-      rows.push({ department: d, action: def.id, key: r.key, requested: r.amount, granted: g, available: avail });
-      fraction = Math.min(fraction, g);
+      rows.push({ department: d, action: def.id, key: r.key, requested: r.amount, granted: g, available: avail, used });
     }
     perDepartment[d] = { requests, granted, fraction: Math.round(fraction * 1000) / 1000 };
   }

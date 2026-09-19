@@ -6,7 +6,7 @@
 
 import { add, change, evacuateOut, injure, kill, movePeople, type Recorder } from "../engine/world";
 import type { Rng } from "../engine/rng";
-import type { ActionSpec, Department, ResourceRequest, SectorId, World } from "../engine/types";
+import type { ActionSpec, ActiveCrisis, Department, ResourceRequest, SectorId, World } from "../engine/types";
 import { FUEL } from "./scenario";
 
 export interface ActionContext {
@@ -28,6 +28,8 @@ export interface ActionDef extends ActionSpec {
   blocked?(w: World): string | null;
   /** Applies the action at the granted fraction and records every effect. */
   apply(w: World, rec: Recorder, fraction: number, ctx: ActionContext): void;
+  /** For a listed crisis, whether this run of the action worked on it; read after apply. Absent means yes. */
+  attends?(c: ActiveCrisis, w: World): boolean;
 }
 
 const hours = (department: Department, amount: number): ResourceRequest => ({ key: "crewHours", amount, department });
@@ -93,6 +95,9 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_escort",
+    targets: ["colonists", "patients"],
+    crises: ["habitat_fire", "infirmary_fire", "depot_fire", "generator_fire", "cold_snap"],
+    minEffort: 0.3,
     department: "security",
     label: "ESCORT THE EVACUATION",
     objectives: { evacuate: 0.9, transport: 0.4, rescue: 0.3, defend: 0.3 },
@@ -114,6 +119,9 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_hold_gate",
+    targets: ["gate", "contact"],
+    crises: ["raiders_at_fence", "unknown_contact", "perimeter_breach"],
+    minEffort: 0.5,
     department: "security",
     label: "HOLD THE GATE",
     objectives: { defend: 0.9, fortify: 0.3 },
@@ -133,6 +141,9 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_investigate",
+    targets: ["contact"],
+    crises: ["unknown_contact"],
+    minEffort: 0.5,
     department: "security",
     label: "INVESTIGATE THE CONTACT",
     objectives: { investigate: 0.95, defend: 0.3 },
@@ -155,6 +166,8 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_patrol",
+    targets: ["gate", "contact"],
+    crises: ["unknown_contact", "raiders_at_fence", "perimeter_breach"],
     department: "security",
     label: "PATROL THE PERIMETER",
     objectives: { defend: 0.6, investigate: 0.3 },
@@ -173,6 +186,9 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_fortify",
+    targets: ["gate"],
+    crises: ["perimeter_breach", "raiders_at_fence"],
+    minEffort: 0.3,
     department: "security",
     label: "FORTIFY THE GATE",
     objectives: { fortify: 0.95, defend: 0.5 },
@@ -192,6 +208,9 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_engage",
+    targets: ["contact"],
+    crises: ["raiders_at_fence", "unknown_contact"],
+    minEffort: 0.5,
     department: "security",
     label: "ENGAGE THE CONTACT",
     tags: ["force"],
@@ -228,6 +247,8 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_withdraw",
+    targets: ["crew"],
+    minEffort: 0.5,
     department: "security",
     label: "WITHDRAW TO THE CORE",
     objectives: { withdraw: 0.9 },
@@ -247,6 +268,8 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_rescue",
+    targets: ["trapped", "colonists"],
+    crises: ["roof_collapse", "second_collapse", "trapped_dying"],
     department: "security",
     label: "SEARCH AND RESCUE",
     objectives: { rescue: 0.95, evacuate: 0.3 },
@@ -274,6 +297,9 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_negotiate",
+    targets: ["contact"],
+    crises: ["refugees_at_gate", "relief_scouts", "raiders_at_fence", "unknown_contact"],
+    minEffort: 0.5,
     department: "security",
     label: "TALK AT THE GATE",
     objectives: { negotiate: 0.95, investigate: 0.3 },
@@ -317,6 +343,9 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_split",
+    targets: ["colonists", "gate", "contact"],
+    crises: ["raiders_at_fence", "habitat_fire"],
+    minEffort: 0.5,
     department: "security",
     label: "SPLIT THE SQUAD",
     objectives: { evacuate: 0.5, defend: 0.5 },
@@ -335,6 +364,7 @@ const SECURITY: ActionDef[] = [
   },
   {
     id: "sec_stand_down",
+    targets: ["crew"],
     department: "security",
     label: "STAND DOWN",
     objectives: { withdraw: 0.4 },
@@ -373,6 +403,8 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_trucks",
+    targets: ["colonists", "trucks", "patients"],
+    crises: ["habitat_fire", "infirmary_fire", "depot_fire", "generator_fire", "cold_snap"],
     department: "logistics",
     label: "DISPATCH THE TRUCKS",
     tags: ["fuel", "trucks"],
@@ -401,6 +433,7 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_convoy",
+    targets: ["colonists", "trucks", "patients"],
     department: "logistics",
     label: "CONVOY TO THE PASS",
     tags: ["fuel", "trucks"],
@@ -436,6 +469,9 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_reserve_pumps",
+    targets: ["pumps", "fuel"],
+    crises: ["water_short"],
+    minEffort: 0.99,
     department: "logistics",
     label: "RESERVE FUEL FOR THE PUMPS",
     objectives: { conserve: 0.9 },
@@ -455,6 +491,9 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_fuel_generator_first",
+    targets: ["generator", "fuel"],
+    crises: ["power_dark"],
+    minEffort: 0.5,
     department: "logistics",
     label: "GENERATOR FIRST",
     objectives: { conserve: 0.6, restore_power: 0.4 },
@@ -473,6 +512,9 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_ration_reduce",
+    targets: ["food"],
+    crises: ["food_short"],
+    minEffort: 0.5,
     department: "logistics",
     label: "REDUCE RATIONS",
     objectives: { conserve: 0.9 },
@@ -491,6 +533,9 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_ration_minimal",
+    targets: ["food"],
+    crises: ["food_short"],
+    minEffort: 0.5,
     department: "logistics",
     label: "MINIMAL RATIONS",
     objectives: { conserve: 0.85 },
@@ -509,6 +554,9 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_ration_full",
+    targets: ["food"],
+    crises: ["hoarding", "protest"],
+    minEffort: 0.5,
     department: "logistics",
     label: "FULL RATIONS",
     tags: ["food"],
@@ -527,6 +575,8 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_haul_water",
+    targets: ["water", "trucks"],
+    crises: ["water_short"],
     department: "logistics",
     label: "HAUL WATER FROM THE RESERVOIR",
     tags: ["fuel", "trucks"],
@@ -547,6 +597,9 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_move_medicine",
+    targets: ["medicine"],
+    crises: ["infirmary_fire"],
+    minEffort: 0.5,
     department: "logistics",
     label: "MOVE THE MEDICINE TO THE CORE",
     objectives: { transport: 0.8, conserve: 0.4 },
@@ -566,6 +619,9 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_move_fuel",
+    targets: ["fuel"],
+    crises: ["depot_fire", "fuel_leak"],
+    minEffort: 0.5,
     department: "logistics",
     label: "MOVE THE FUEL TO THE CORE",
     objectives: { transport: 0.8, conserve: 0.4, abandon: 0.2 },
@@ -585,6 +641,9 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_repair_truck",
+    targets: ["trucks"],
+    crises: ["vehicle_breakdown"],
+    minEffort: 0.6,
     department: "logistics",
     label: "REPAIR A TRUCK",
     objectives: { repair: 0.8 },
@@ -602,6 +661,8 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_shelter",
+    targets: ["colonists"],
+    crises: ["cold_snap", "habitat_fire"],
     department: "logistics",
     label: "SHELTER PEOPLE IN THE CORE",
     objectives: { evacuate: 0.6, transport: 0.5 },
@@ -621,6 +682,8 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_return_home",
+    targets: ["colonists"],
+    minEffort: 0.5,
     department: "logistics",
     label: "RETURN PEOPLE TO THE HABITAT",
     objectives: { transport: 0.5, other: 0.3 },
@@ -641,6 +704,8 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_hold_trucks",
+    targets: ["trucks", "fuel"],
+    minEffort: 0.5,
     department: "logistics",
     label: "HOLD THE TRUCKS",
     objectives: { conserve: 0.6 },
@@ -658,6 +723,8 @@ const LOGISTICS: ActionDef[] = [
   },
   {
     id: "log_release_trucks",
+    targets: ["trucks"],
+    minEffort: 0.5,
     department: "logistics",
     label: "RELEASE THE TRUCKS",
     objectives: { transport: 0.4, other: 0.2 },
@@ -697,6 +764,9 @@ const MEDICAL: ActionDef[] = [
   },
   {
     id: "med_treat_all",
+    targets: ["patients", "medicine"],
+    crises: ["accident"],
+    minEffort: 0.3,
     department: "medical",
     label: "TREAT EVERYONE",
     tags: ["medicine"],
@@ -717,6 +787,9 @@ const MEDICAL: ActionDef[] = [
   },
   {
     id: "med_conserve",
+    targets: ["medicine", "patients"],
+    crises: ["medicine_short"],
+    minEffort: 0.5,
     department: "medical",
     label: "CRITICAL CASES ONLY",
     objectives: { conserve: 0.9, treat: 0.3 },
@@ -737,6 +810,9 @@ const MEDICAL: ActionDef[] = [
   },
   {
     id: "med_field_team",
+    targets: ["trapped", "patients", "crew"],
+    crises: ["roof_collapse", "second_collapse", "trapped_dying"],
+    minEffort: 0.5,
     department: "medical",
     label: "FIELD TEAM TO THE SITE",
     tags: ["field"],
@@ -763,6 +839,9 @@ const MEDICAL: ActionDef[] = [
   },
   {
     id: "med_move_patients",
+    targets: ["patients"],
+    crises: ["ward_cold", "infirmary_fire"],
+    minEffort: 0.5,
     department: "medical",
     label: "MOVE THE PATIENTS TO THE CORE",
     objectives: { evacuate: 0.85, transport: 0.4 },
@@ -784,6 +863,8 @@ const MEDICAL: ActionDef[] = [
   },
   {
     id: "med_return_patients",
+    targets: ["patients"],
+    minEffort: 0.5,
     department: "medical",
     label: "REOPEN THE INFIRMARY",
     objectives: { transport: 0.4, other: 0.3 },
@@ -805,6 +886,9 @@ const MEDICAL: ActionDef[] = [
   },
   {
     id: "med_quarantine",
+    targets: ["water", "colonists"],
+    crises: ["contamination", "outbreak"],
+    minEffort: 0.5,
     department: "medical",
     label: "QUARANTINE",
     objectives: { contain: 0.9 },
@@ -822,6 +906,9 @@ const MEDICAL: ActionDef[] = [
   },
   {
     id: "med_cold_response",
+    targets: ["colonists", "patients"],
+    crises: ["cold_snap", "ward_cold"],
+    minEffort: 0.5,
     department: "medical",
     label: "COLD RESPONSE",
     objectives: { treat: 0.6, defend: 0.2 },
@@ -838,6 +925,8 @@ const MEDICAL: ActionDef[] = [
   },
   {
     id: "med_rest",
+    targets: ["crew"],
+    crises: ["staff_exhaustion"],
     department: "medical",
     label: "STAFF REST",
     objectives: { withdraw: 0.4 },
@@ -870,14 +959,16 @@ const ENGINEERING: ActionDef[] = [
     passive: true,
     requests: () => [hours("engineering", 30)],
     urge: () => 0,
-    apply(w, rec) {
-      if (w.sectors.core.fire === 0) add(w, rec, "power.generatorHealth", 0.02, "Maintenance on the generator.", 0, 1);
-      add(w, rec, "water.pumpHealth", 0.02, "Maintenance on the pumps.", 0, 1);
+    apply(w, rec, f) {
+      if (w.sectors.core.fire === 0) add(w, rec, "power.generatorHealth", 0.02 * f, "Maintenance on the generator.", 0, 1);
+      add(w, rec, "water.pumpHealth", 0.02 * f, "Maintenance on the pumps.", 0, 1);
       worked(w, "engineering", 0.4);
     },
   },
   {
     id: "eng_fight_fire",
+    targets: ["fire"],
+    crises: ["generator_fire", "habitat_fire", "depot_fire", "infirmary_fire"],
     department: "engineering",
     label: "FIGHT THE FIRE",
     tags: ["fire"],
@@ -891,6 +982,7 @@ const ENGINEERING: ActionDef[] = [
     requests: () => [hours("engineering", 80), { key: "water", amount: 0.3 }],
     urge: (w) => Math.max(...Object.values(w.sectors).map((s) => s.fire)),
     blocked: (w) => (Object.values(w.sectors).every((s) => s.fire === 0) ? "nothing is burning" : null),
+    attends: (c, w) => (w.tonight.fireFought[c.sector] ?? 0) > 0,
     apply(w, rec, f, ctx) {
       const burning = (["core", "habitat", "works", "infirmary"] as SectorId[]).filter((s) => w.sectors[s].fire > 0);
       const s = ctx.sector && burning.includes(ctx.sector) ? ctx.sector : burning.sort((a, b) => w.sectors[b].fire - w.sectors[a].fire)[0];
@@ -904,6 +996,8 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_repair_generator",
+    targets: ["generator"],
+    crises: ["power_dark", "generator_overload"],
     department: "engineering",
     label: "REPAIR THE GENERATOR",
     objectives: { repair: 0.95, restore_power: 0.8 },
@@ -923,6 +1017,9 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_isolate",
+    targets: ["generator", "fire"],
+    crises: ["generator_fire"],
+    minEffort: 0.5,
     department: "engineering",
     label: "ISOLATE THE GENERATOR",
     objectives: { contain: 0.7, abandon: 0.3, withdraw: 0.2 },
@@ -943,6 +1040,9 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_power_infirmary",
+    targets: ["power", "patients"],
+    crises: ["ward_cold"],
+    minEffort: 0.5,
     department: "engineering",
     label: "POWER TO THE INFIRMARY",
     tags: ["divert"],
@@ -961,6 +1061,9 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_power_habitat",
+    targets: ["power", "colonists"],
+    crises: ["cold_snap"],
+    minEffort: 0.5,
     department: "engineering",
     label: "POWER TO THE HABITAT",
     tags: ["divert"],
@@ -979,6 +1082,9 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_power_works",
+    targets: ["power", "pumps"],
+    crises: ["water_short"],
+    minEffort: 0.5,
     department: "engineering",
     label: "POWER TO THE PUMPS",
     tags: ["divert"],
@@ -997,6 +1103,9 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_shed_load",
+    targets: ["power"],
+    crises: ["power_dark", "fuel_short"],
+    minEffort: 0.5,
     department: "engineering",
     label: "SHED NON-ESSENTIAL LOAD",
     objectives: { conserve: 0.8, restore_power: 0.3 },
@@ -1015,6 +1124,8 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_restore_load",
+    targets: ["power"],
+    minEffort: 0.5,
     department: "engineering",
     label: "RESTORE FULL LOAD",
     objectives: { restore_power: 0.5, other: 0.2 },
@@ -1032,6 +1143,9 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_bridge_reserve",
+    targets: ["battery", "power"],
+    crises: ["power_dark", "cold_snap"],
+    minEffort: 0.5,
     department: "engineering",
     label: "BRIDGE WITH THE BATTERY",
     tags: ["reserve"],
@@ -1050,6 +1164,8 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_hold_reserve",
+    targets: ["battery"],
+    minEffort: 0.5,
     department: "engineering",
     label: "HOLD THE RESERVE",
     objectives: { conserve: 0.7 },
@@ -1067,6 +1183,8 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_repair_pumps",
+    targets: ["pumps", "water"],
+    crises: ["pump_failure", "water_short"],
     department: "engineering",
     label: "REPAIR THE PUMPS",
     objectives: { repair: 0.95 },
@@ -1086,6 +1204,8 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_thaw_pipes",
+    targets: ["pipes", "water"],
+    crises: ["frozen_pipes"],
     department: "engineering",
     label: "THAW THE PIPES",
     objectives: { repair: 0.85, restore_power: 0.1 },
@@ -1105,6 +1225,8 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_shore_habitat",
+    targets: ["roof", "trapped"],
+    crises: ["roof_collapse", "second_collapse", "trapped_dying", "storm"],
     department: "engineering",
     label: "SHORE UP THE HABITAT",
     objectives: { repair: 0.7, rescue: 0.6, fortify: 0.5 },
@@ -1129,6 +1251,9 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_overrun",
+    targets: ["generator", "power"],
+    crises: ["cold_snap", "power_dark"],
+    minEffort: 0.5,
     department: "engineering",
     label: "RUN THE GENERATOR HOT",
     tags: ["overrun"],
@@ -1148,6 +1273,7 @@ const ENGINEERING: ActionDef[] = [
   },
   {
     id: "eng_pull_team",
+    targets: ["crew"],
     department: "engineering",
     label: "PULL THE TEAM OUT",
     objectives: { withdraw: 0.9, abandon: 0.3 },

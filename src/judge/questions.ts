@@ -2,7 +2,7 @@
 // back to the engine's Measurements. Question ids are for code; the meaning is
 // in the instructions and criteria, which name state fields in backticks.
 //
-// One request asks everything: four Choices, forty Nouls, six Scores, plus two
+// One request asks everything: five Choices, forty Nouls, six Scores, plus two
 // Nouls per active standing order and one per pending clarification. The
 // engine consumes only what applies; the rest is speculative fan-out.
 
@@ -26,6 +26,7 @@ import {
   type ScoreId,
   type ScoreMeasure,
   type SectorId,
+  type Target,
   type Timeframe,
 } from "../engine/types";
 
@@ -271,6 +272,28 @@ export const OBJECTIVE_CRITERIA: Record<Objective, string> = {
   other: "None of these, or the order is not an instruction to do something",
 };
 
+export const TARGET_CRITERIA: Record<Target | "none", string> = {
+  generator: "The generator or the reactor: repair it, isolate it, run it hot, its load",
+  battery: "The battery or the emergency power reserve",
+  power: "Electrical power or heat supplied to an area: restore it, divert it, cut it, keep an area warm",
+  pumps: "The water pumps",
+  pipes: "The water pipes, frozen or split",
+  water: "The water supply or the stored water in general, or its contamination",
+  fuel: "The fuel stock or its use",
+  food: "Food stock or rations",
+  medicine: "The medicine stock",
+  trucks: "The trucks or vehicles",
+  patients: "The injured, the sick or the patients",
+  trapped: "The colonists under the collapsed roof, when the order calls them trapped, buried or under the rubble",
+  colonists: "Colonists or people in general: everyone, everybody, civilians, the people of an area, a sector being evacuated",
+  crew: "An officer's own team, squad or crew, named as such: the engineering team, your people, the squad",
+  gate: "The gate, the fence or the perimeter",
+  contact: "Whoever or whatever is outside the fence: the movement, the band, the refugees, the scouts",
+  fire: "A fire",
+  roof: "The habitat roof or another structure",
+  none: "No particular thing, or two or more things equally",
+};
+
 export const TIMEFRAME_CRITERIA: Record<Timeframe, string> = {
   immediate: "Now, at once, before anything else",
   today: "By tonight, before dark, by the end of the day",
@@ -346,6 +369,11 @@ export function buildQuestions(state: JudgeState): Questions {
     instructions: "When `order` wants its main effect.",
     criteria: { ...TIMEFRAME_CRITERIA },
   };
+  q.target = {
+    type: "choice",
+    instructions: "The one thing `order` is mainly about: the equipment, stock, people or hazard its own words name. Choose from what the order says, not from what `situation` lists; `situation` and `resources` only say what exists.",
+    criteria: { ...TARGET_CRITERIA },
+  };
   q.owner = {
     type: "choice",
     instructions: "The one department `order` is addressed to, by an officer's name or by role, as described in `departments`. Other departments may be touched by the order without being its owner.",
@@ -381,7 +409,7 @@ export function buildQuestions(state: JudgeState): Questions {
   return q;
 }
 
-export const FIXED_QUESTION_COUNT = 4 + NOULS.length + SCORE_IDS.length;
+export const FIXED_QUESTION_COUNT = 5 + NOULS.length + SCORE_IDS.length;
 
 export function questionCount(state: JudgeState): number {
   return FIXED_QUESTION_COUNT + 2 * Math.min(MAX_STANDING, state.standing_orders.length) + Math.min(MAX_PENDING, state.pending_clarifications.length);
@@ -411,7 +439,8 @@ export function toMeasurements(answers: Answers, state: JudgeState): Measurement
   for (const id of NOUL_IDS) nouls[id] = noul(answers[id]);
   const scores = {} as Record<ScoreId, ScoreMeasure>;
   for (const id of SCORE_IDS) scores[id] = score(answers[id]);
-  const standing = state.standing_orders.slice(0, MAX_STANDING).map((_, i) => ({
+  const standing = state.standing_orders.slice(0, MAX_STANDING).map((so, i) => ({
+    standingOrderId: so.id,
     conflict: noul(answers[`so_${i}_conflict`]),
     override: noul(answers[`so_${i}_override`]),
   }));
@@ -420,6 +449,7 @@ export function toMeasurements(answers: Answers, state: JudgeState): Measurement
     objective: choice<Objective>(answers.objective, "other"),
     sector: choice<SectorId | "none">(answers.sector, "none"),
     timeframe: choice<Timeframe>(answers.timeframe, "unstated"),
+    target: choice<Target | "none">(answers.target, "none"),
     owner: choice<Department | "none">(answers.owner, "none"),
     nouls,
     scores,
@@ -438,6 +468,7 @@ export function emptyMeasurements(): Measurements {
     objective: { choice: "other", confidence: 0, probabilities: { other: 1 } },
     sector: { choice: "none", confidence: 0, probabilities: { none: 1 } },
     timeframe: { choice: "unstated", confidence: 0, probabilities: { unstated: 1 } },
+    target: { choice: "none", confidence: 0, probabilities: { none: 1 } },
     owner: { choice: "none", confidence: 0, probabilities: { none: 1 } },
     nouls,
     scores,

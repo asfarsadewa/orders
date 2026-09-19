@@ -27,7 +27,7 @@ export function Help({ onClose }: { onClose(): void }) {
       </ul>
       <h3>what happens to an order</h3>
       <ol>
-        <li>The model, TypeSafe Jev, measures the order one time. It answers about 55 typed questions: the objective, the owner, the sector, the priorities, the constraints and the clarity.</li>
+        <li>The model, TypeSafe Jev, measures the order one time. It answers about 56 typed questions: the objective, the target, the owner, the sector, the priorities, the constraints and the clarity.</li>
         <li>The model returns probabilities. It does not return a plan.</li>
         <li>Each officer in the order's scope receives the same measurement.</li>
         <li>Each officer scores every action in their library with a fixed formula. The formula uses the measurement and the officer's doctrine.</li>
