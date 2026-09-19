@@ -63,10 +63,10 @@ export async function judge(session: string, state: JudgeState): Promise<JudgeRe
 /** A human-readable reason for a failed call. */
 export function describeError(e: unknown): string {
   if (e instanceof ApiError) {
-    if (e.status === 429) return "too many orders too fast; wait a moment";
-    if (e.status === 401) return "the run session expired; start a new run";
-    if (e.status === 503 || e.status === 504) return "the model is busy; try again";
+    if (e.status === 429) return "Too many orders. Wait a moment.";
+    if (e.status === 401) return "The run session expired. Start a new run.";
+    if (e.status === 503 || e.status === 504) return "The model is busy. Try again.";
     return e.message;
   }
-  return e instanceof Error ? e.message : "something failed";
+  return e instanceof Error ? e.message : "The request failed.";
 }

@@ -64,11 +64,11 @@ function DecisionTrace({ d }: { d: Decision }) {
           ))}
         </div>
       ))}
-      {infeasible.length > 0 && <div className="dim">not possible today: {infeasible.map((c) => `${ACTION_BY_ID.get(c.action)?.label ?? c.action} (${c.infeasibleReason})`).join("; ")}</div>}
+      {infeasible.length > 0 && <div className="dim">Not possible today: {infeasible.map((c) => `${ACTION_BY_ID.get(c.action)?.label ?? c.action} (${c.infeasibleReason})`).join(" · ")}</div>}
       {d.allocation && (
         <div style={{ marginTop: 8 }}>
           <span className="dim">allocation </span>
-          {d.allocation.requests.length === 0 && <span className="dim">nothing requested</span>}
+          {d.allocation.requests.length === 0 && <span className="dim">no request</span>}
           {d.allocation.requests.map((r) => (
             <span key={r.key} style={{ marginRight: 12 }}>
               {r.key} {r.key === "crewHours" ? `${r.amount}h` : r.amount % 1 ? f2(r.amount) : r.amount} → {pct(d.allocation!.granted[r.key] ?? 1)}
@@ -78,7 +78,7 @@ function DecisionTrace({ d }: { d: Decision }) {
         </div>
       )}
       <div style={{ marginTop: 8 }}>
-        {d.effects.length === 0 && <span className="dim">no effect on the world today</span>}
+        {d.effects.length === 0 && <span className="dim">No effect on the world today.</span>}
         {d.effects.map((e, i) => (
           <div className="fx" key={i}>
             {e.path} {String(e.from)} → {String(e.to)} · {e.note}
@@ -118,7 +118,7 @@ export function Inspector({ state, target, onClose }: { state: GameState; target
           </section>
           <section>
             <h4>orders this day for {department}</h4>
-            {orders.length === 0 && <div className="dim">none; the officer acted on initiative or routine</div>}
+            {orders.length === 0 && <div className="dim">None. The officer acted on initiative or routine.</div>}
             {orders.map((o) => (
               <div key={o.id} style={{ marginBottom: 10 }}>
                 <div>
@@ -126,7 +126,7 @@ export function Inspector({ state, target, onClose }: { state: GameState; target
                   {o.text}
                 </div>
                 {vectorLocked ? (
-                  <div className="dim">interpretation opens after execution</div>
+                  <div className="dim">The measurement opens after you end the day.</div>
                 ) : (
                   <div className="vector">
                     <span className="sc">
@@ -155,7 +155,7 @@ export function Inspector({ state, target, onClose }: { state: GameState; target
           </section>
           <section>
             <h4>memory</h4>
-            {standing.length === 0 && !learned && <div className="dim">no standing orders in scope; nothing learned yet</div>}
+            {standing.length === 0 && !learned && <div className="dim">No standing orders in scope. No record yet.</div>}
             {standing.map((s) => (
               <div key={s.id}>
                 <span className="amber">{s.id}</span> <span className="dim">day {s.issuedDay}</span> {s.text}
@@ -163,14 +163,14 @@ export function Inspector({ state, target, onClose }: { state: GameState; target
             ))}
             {learned && (
               <div>
-                <span className="dim">learned: </span>
+                <span className="dim">record: </span>
                 {human(learned.priority)} {f2(learned.weight)}
               </div>
             )}
           </section>
           <section>
             <h4>decision</h4>
-            {decision ? <DecisionTrace d={decision} /> : <div className="dim">{day === state.day ? "not executed yet; end the day to see what the officer does" : "no record"}</div>}
+            {decision ? <DecisionTrace d={decision} /> : <div className="dim">{day === state.day ? "Not executed yet. End the day to see the action." : "No record."}</div>}
           </section>
         </>
       )}

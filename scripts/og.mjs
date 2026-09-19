@@ -76,10 +76,10 @@ async function main() {
   <rect x="0" y="${bandY}" width="${W}" height="${BAND}" fill="${C.bg}"/>
   <rect x="0" y="${bandY}" width="${W}" height="1" fill="${C.rule}"/>
   ${text(44, bandY + 74, "ORDERS", { family: "Big Shoulders Display", size: 78, weight: 800, spacing: 5 })}
-  ${text(44, bandY + 106, "Four officers. One colony. The enemy is what people think you meant.", { size: 19 })}
-  ${text(44, bandY + 132, "Write orders in your own words. TypeSafe Jev measures what you meant; doctrine decides what they do.", { family: "Martian Mono", size: 12, weight: 500, fill: C.dim })}
+  ${text(44, bandY + 106, "A command game where the enemy is what people think you meant.", { size: 19 })}
+  ${text(44, bandY + 132, "Write orders in plain text to four officers. A calibrated model measures each order. Doctrine decides each action.", { family: "Martian Mono", size: 12, weight: 500, fill: C.dim })}
   ${strip}
-  ${text(W - 44, bandY + 24, "ONE ORDER · THREE READINGS", { family: "Big Shoulders Text", size: 12, weight: 700, fill: C.dim, anchor: "end", spacing: 2 })}
+  ${text(W - 44, bandY + 24, "ONE ORDER · THREE ACTIONS", { family: "Big Shoulders Text", size: 12, weight: 700, fill: C.dim, anchor: "end", spacing: 2 })}
 </svg>`;
   const fontFiles = await fonts();
   const resvg = new Resvg(svg, { fitTo: { mode: "width", value: W }, font: { fontFiles, loadSystemFonts: false, defaultFontFamily: "Literata" } });

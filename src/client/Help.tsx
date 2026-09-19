@@ -9,49 +9,51 @@ export function Help({ onClose }: { onClose(): void }) {
           close
         </button>
       </div>
-      <p>
-        You command Vesper Station, a colony of 184 people on a cold plateau, for fourteen days after its systems failed. You do not click actions. You write orders, up to three a day, to four officers.
-      </p>
+      <p>You command Vesper Station, a colony of 184 people, for 14 days after a systems failure. There are no action buttons. You write orders in plain text to four officers. You can write up to three orders each day.</p>
       <h3>the officers</h3>
       <ul>
         <li>
-          <b>Captain Ilya</b>, security. Fast and aggressive; acts on what you meant, not what you wrote. Never say <code>whatever it takes</code> unless you mean it.
+          <b>Captain Ilya</b>, security. High initiative, low literalness, low risk aversion. He acts on the intent of an order, not on its exact words. Do not write <code>whatever it takes</code> or <code>at any cost</code> unless you accept casualties.
         </li>
         <li>
-          <b>Chen</b>, logistics. Literal and protective of reserves. When two resources compete, she needs you to say which comes first, or she asks and waits.
+          <b>Chen</b>, logistics. High literalness, high resource caution. If an order needs two resources and does not rank them, she asks a question and waits for the answer. State which resource comes first.
         </li>
         <li>
-          <b>Dr Vale</b>, medical. Human life first. Hears ambiguity as permission to save someone; if medicine must be conserved, tell her directly.
+          <b>Dr Vale</b>, medical. High life priority. If an order is not specific, she selects the action that saves the most lives. If you want her to conserve medicine, say so in the order.
         </li>
         <li>
-          <b>Chief Orlov</b>, engineering. A systems thinker who hears <code>keep the colony alive</code> as <code>keep the systems alive</code>. Weighs standing orders heavily.
+          <b>Chief Orlov</b>, engineering. High infrastructure weight, high precedent weight. He protects the generator, the pumps and the pipes before comfort. He follows standing orders closely. If a new order conflicts with a standing order, he says so before he acts.
         </li>
       </ul>
       <h3>what happens to an order</h3>
-      <p>
-        A calibrated model, TypeSafe Jev, measures the order once: what it asks for, who it is for, what it puts first, what it forbids or permits, how clear it is. It returns probabilities, not a plan. Every officer receives the same measurement. Their differences come from doctrine, numbers you learn by watching them. Each picks one action from a finite library by an explicit utility, and every term of it is in the inspector.
-      </p>
-      <p>
-        When you end the day, the chosen actions compete for fuel, trucks, crew hours and medicine, the world runs through the night, and the morning report shows what each officer thought you meant.
-      </p>
+      <ol>
+        <li>The model, TypeSafe Jev, measures the order one time. It answers about 55 typed questions: the objective, the owner, the sector, the priorities, the constraints and the clarity.</li>
+        <li>The model returns probabilities. It does not return a plan.</li>
+        <li>Each officer in the order's scope receives the same measurement.</li>
+        <li>Each officer scores every action in their library with a fixed formula. The formula uses the measurement and the officer's doctrine.</li>
+        <li>The officer selects the action with the highest score. If the order is not clear enough, the officer asks a question instead.</li>
+        <li>When you end the day, the selected actions share the fuel, the trucks, the crew hours and the medicine.</li>
+        <li>The night runs. The morning report shows each action and its effects.</li>
+        <li>The inspector shows every number in the formula.</li>
+      </ol>
       <h3>memory</h3>
       <p>
-        An order that sets a rule (<code>from now on</code>, <code>never</code>, <code>standing order</code>) becomes a standing order and stays in force until you cancel it. Every order also teaches each department what you tend to value; officers who weigh precedent will hesitate when today contradicts yesterday.
+        An order that sets a rule becomes a standing order. Examples: <code>from now on</code>, <code>never</code>, <code>standing order</code>. A standing order stays in force until you cancel it. Each order also records the priorities you stated. The record fades over the following days. An officer with high precedent weight asks a question if a new order conflicts with a standing order or with the record.
       </p>
       <h3>modes</h3>
       <ul>
         <li>
-          <b>Analyst</b>: the full measurement is shown under each order at once.
+          <b>Analyst</b>: The full measurement shows under each order when you send it.
         </li>
         <li>
-          <b>Commander</b>: officers respond at once; the measurement and the trace open after the day executes.
+          <b>Commander</b>: The officers answer when you send an order. The measurement and the trace open after you end the day.
         </li>
         <li>
-          <b>Iron Command</b>: only what the officers say and what the world does. The trace opens when the run ends.
+          <b>Iron Command</b>: You see only the officers' words and the results. The trace opens when the run ends.
         </li>
       </ul>
-      <h3>the rule</h3>
-      <p>Nothing that happens comes from the model. It measures; the game decides. If an outcome cannot be explained by a number you can see, it is a bug.</p>
+      <h3>what the model does</h3>
+      <p>The model only measures the order. The game code selects every action and calculates every result. Every number in a result is visible in the inspector. If you find a result with no visible number behind it, report it as a bug.</p>
     </div>
   );
 }

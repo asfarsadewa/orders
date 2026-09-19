@@ -109,7 +109,7 @@ function Night({ r }: { r: DayReport }) {
             {l.note}
           </span>
         ))}
-        {lines.length > 14 && <span className="dim">and {lines.length - 14} more, in the inspector</span>}
+        {lines.length > 14 && <span className="dim">{lines.length - 14} more lines are in the inspector.</span>}
       </div>
     </div>
   );
@@ -151,7 +151,7 @@ export function Log({ state, onWhy }: { state: GameState; onWhy(day: number, dep
     if (state.today.length === 0 && state.reports.length === 0) {
       items.push(
         <div className="entry" key="hello">
-          <div className="text dim">Morning of day one. Four officers are waiting. The text box is the command surface; the map and the board are for reading.</div>
+          <div className="text dim">Day 1. Write your first order in the text box. The map and the status board show the colony.</div>
         </div>,
       );
     }

@@ -17,7 +17,7 @@ export function situationLines(w: World): string[] {
   const lines = w.crises.map((c) => CRISIS_BY_ID.get(c.template)?.describe(w, c) ?? c.template);
   const cold = w.weather.tempC < -5 ? `, ${["core", "habitat", "works", "infirmary"].filter((s) => !w.sectors[s as keyof World["sectors"]].heated).length} sectors were unheated last night` : "";
   lines.push(`Weather: ${w.weather.kind}, ${w.weather.tempC} C tonight${cold}.`);
-  if (w.roadOpen) lines.push("The road to the pass is open; trucks can carry people out.");
+  if (w.roadOpen) lines.push("The road to the pass is open. Trucks can carry people out.");
   return lines;
 }
 

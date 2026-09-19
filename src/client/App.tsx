@@ -200,7 +200,7 @@ export function App() {
             <section className="panel officers-panel" aria-label="Officers">
               <header>
                 <span>Officers</span>
-                <span>click one for the trace</span>
+                <span>select an officer to open the trace</span>
               </header>
               <OfficerStrip state={state} busy={run.busy} selected={inspect?.department ?? null} onSelect={onOfficer} />
             </section>

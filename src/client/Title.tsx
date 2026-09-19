@@ -6,9 +6,9 @@ import type { Mode } from "../engine/types";
 import { useTurnstile } from "./turnstile";
 
 const MODES: { id: Mode; name: string; blurb: string }[] = [
-  { id: "analyst", name: "Analyst", blurb: "Full measurement visible at once. For learning the instrument." },
-  { id: "commander", name: "Commander", blurb: "Officers answer at once; the trace opens after each day executes." },
-  { id: "iron", name: "Iron Command", blurb: "Only what people say and what the world does. The trace opens at the end." },
+  { id: "analyst", name: "Analyst", blurb: "The full measurement shows under each order when you send it." },
+  { id: "commander", name: "Commander", blurb: "The officers answer when you send an order. The measurement and the trace open after you end the day." },
+  { id: "iron", name: "Iron Command", blurb: "You see only the officers' words and the results. The trace opens when the run ends." },
 ];
 
 export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHelp }: { siteKey: string | null; busy: boolean; error: string | null; canResume: boolean; onStart(mode: Mode, token: string, seed?: string): void; onResume(): void; onHelp(): void }) {
@@ -39,7 +39,7 @@ export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHe
         </h2>
       </div>
       <p className="lead">
-        Vesper Station is failing. You have fourteen days, four officers and a text box. Write orders in your own words; a calibrated model measures what you meant, and each officer's doctrine decides what they do about it. Then read the trace and learn why Chen kept two trucks back.
+        You command Vesper Station, a colony of 184 people, for 14 days after a systems failure. You write orders in plain text to four officers, up to three orders each day. A calibrated model measures each order. Each officer applies a different doctrine to the same measurement and selects one action. After each day, the trace shows the numbers behind each action.
       </p>
       <div className="keyart">
         <img src="/art/keyart.jpg" alt="Vesper Station on a cold plateau at dusk, lit windows against snow" width={1536} height={640} onError={(e) => ((e.currentTarget.parentElement as HTMLElement).style.display = "none")} />
@@ -68,7 +68,7 @@ export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHe
             <input value={seed} onChange={(e) => setSeed(e.target.value)} placeholder="random" maxLength={24} style={{ border: 0, background: "transparent", width: "12ch", outline: "none" }} aria-label="Seed" />
           </label>
           <button className="primary" disabled={busy || waiting || turnstile.state === "error" || !siteKey} onClick={start}>
-            {waiting || busy ? "starting…" : "Take command"}
+            {waiting || busy ? "Starting…" : "Take command"}
           </button>
           {canResume && (
             <button className="ctl" onClick={onResume}>
@@ -80,9 +80,9 @@ export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHe
           </button>
         </div>
         <div ref={slot} className="turnstile-slot" />
-        {(error || localError || turnstile.state === "error") && <div className="red">{error ?? localError ?? "verification could not load; reload the page"}</div>}
+        {(error || localError || turnstile.state === "error") && <div className="red">{error ?? localError ?? "Verification did not load. Reload the page."}</div>}
         <div className="dim" style={{ fontSize: 12, lineHeight: "18px" }}>
-          One verification per run. Your orders are sent to a server that holds the model key; the game itself runs in this tab and saves to it. No account, nothing stored elsewhere.
+          You complete one verification for each run. The server holds the model key and measures your orders. The server logs the request size and time, not the order text. The game runs in this tab and saves to this tab. There is no account.
         </div>
       </div>
     </div>

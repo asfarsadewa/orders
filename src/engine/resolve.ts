@@ -405,7 +405,7 @@ export function allocate(state: GameState, world: World, decided: Decided[]): { 
     perDepartment[d] = { requests, granted, fraction: Math.round(fraction * 1000) / 1000 };
   }
   return {
-    allocations: { rows, ruledBy: anyPrecedence ? "the priorities stated in today's orders, then initiative" : "officer initiative; no order stated a priority" },
+    allocations: { rows, ruledBy: anyPrecedence ? "the priorities stated in today's orders, then initiative" : "officer initiative. No order stated a priority" },
     perDepartment,
   };
 }

@@ -55,28 +55,28 @@ function stance(state: GameState, d: Department, m: Measurements, decision: Deci
   }
   const conflicts = standingConflicts(state.standing, m).filter((c) => c.so.scope.includes(d));
   if (conflicts.length && doc.precedentWeight >= 0.6) {
-    notes.push(`= conflicts with ${conflicts.map((c) => `${c.so.id} (${c.conflict.toFixed(2)})`).join(", ")}; precedent weight ${doc.precedentWeight.toFixed(2)}`);
+    notes.push(`= conflicts with ${conflicts.map((c) => `${c.so.id} (${c.conflict.toFixed(2)})`).join(", ")} · precedent weight ${doc.precedentWeight.toFixed(2)}`);
     return { act: "challenge_precedent", notes };
   }
   const chosen = ACTION_BY_ID.get(decision.action);
   const absolute = m.nouls.absolute_language >= THRESHOLDS.absolute;
   const reckless = m.scores.risk_tolerance.score >= 2.3;
   if ((absolute || reckless) && (chosen?.risk ?? 0) >= 0.4) {
-    notes.push(`= ${absolute ? `absolute language ${m.nouls.absolute_language.toFixed(2)}` : `risk tolerance ${m.scores.risk_tolerance.score.toFixed(1)}/3`}; the chosen action carries risk ${(chosen?.risk ?? 0).toFixed(2)}`);
+    notes.push(`= ${absolute ? `absolute language ${m.nouls.absolute_language.toFixed(2)}` : `risk tolerance ${m.scores.risk_tolerance.score.toFixed(1)}/3`} · the selected action has risk ${(chosen?.risk ?? 0).toFixed(2)}`);
     return { act: "warn", notes };
   }
   const spends = (chosen?.constraints?.preserve_reserve ?? 0) < 0 || (chosen?.constraints?.permission_to_use_reserve ?? 0) > 0 || (chosen?.priorities?.priority_fuel ?? 0) < 0 || (chosen?.priorities?.priority_medicine ?? 0) < 0 || (chosen?.priorities?.priority_infrastructure ?? 0) < 0;
   if (doc.riskAversion >= 0.6 && spends && (m.nouls.permission_to_use_reserve >= THRESHOLDS.constraint || m.nouls.permission_to_sacrifice_equipment >= THRESHOLDS.constraint || m.scores.resource_flexibility.score >= 2.4)) {
-    notes.push(`= ${chosen?.label.toLowerCase()} spends what the officer would keep; resource flexibility ${m.scores.resource_flexibility.score.toFixed(1)}/3`);
+    notes.push(`= ${chosen?.label.toLowerCase()} spends a reserve · resource flexibility ${m.scores.resource_flexibility.score.toFixed(1)}/3`);
     return { act: "warn", notes };
   }
   const violated = chosen?.constraints ? Object.entries(chosen.constraints).filter(([c, w]) => (w ?? 0) < 0 && m.nouls[c as keyof typeof m.nouls] >= THRESHOLDS.constraint) : [];
   if (violated.length) {
-    notes.push(`= complies, but the action works against ${violated.map(([c]) => c.replace(/_/g, " ")).join(", ")}`);
+    notes.push(`= complies · the action works against ${violated.map(([c]) => c.replace(/_/g, " ")).join(", ")}`);
     return { act: "object", notes };
   }
   if (conflicts.length) {
-    notes.push(`= sets aside ${conflicts.map((c) => c.so.id).join(", ")}; precedent weight ${doc.precedentWeight.toFixed(2)}`);
+    notes.push(`= sets aside ${conflicts.map((c) => c.so.id).join(", ")} · precedent weight ${doc.precedentWeight.toFixed(2)}`);
     return { act: "object", notes };
   }
   if (m.nouls.gives_clear_priority >= THRESHOLDS.constraint) {
@@ -102,7 +102,7 @@ export function applyOrder(state: GameState, text: string, measurements: Measure
     next.today.push(record);
     for (const d of scope.length ? scope : (["security", "logistics", "medical", "engineering"] as Department[]).slice(0, 1)) {
       const line = pickLine(next.seed, id, d, "routine");
-      utterances.push({ department: d, day: next.day, act: "routine", lineId: line.id, text: line.text, notes: [isQuestion(measurements) ? "= that was a question, not an order; the officers report through the status board" : "= that was not addressed to the colony"], orderId: id });
+      utterances.push({ department: d, day: next.day, act: "routine", lineId: line.id, text: line.text, notes: [isQuestion(measurements) ? "= That was a question, not an order. The status board holds the answer." : "= That was not addressed to the colony."], orderId: id });
     }
     next.todayUtterances.push(...utterances);
     return next;
@@ -177,7 +177,7 @@ function reportUtterances(state: GameState, decisions: Decision[], crewCasualtie
     const unexpected = dec.effects.some((e) => e.path === "security.contact" || e.path === "security.reliefLost" || e.path.endsWith(".dead") || e.path === "vehicles.operational");
     if (dec.basis === "clarification") {
       act = "report_partial";
-      notes.push(state.pending.some((p) => p.department === d && p.day === dec.day && p.answeredBy) ? "= answered; acted on the answer" : "= waited for an answer that did not come; held to routine");
+      notes.push(state.pending.some((p) => p.department === d && p.day === dec.day && p.answeredBy) ? "= The question was answered. The officer acted on the answer." : "= No answer came. The officer held to routine.");
     } else if (dec.basis === "routine") {
       act = "routine";
     } else if (crewCasualties[d] > 0 || unexpected) {
@@ -190,7 +190,7 @@ function reportUtterances(state: GameState, decisions: Decision[], crewCasualtie
       if (short.length) notes.push(`= granted ${short.join(", ")}`);
     }
     for (const e of dec.effects.slice(0, 6)) notes.push(`= ${e.note}`);
-    if (dec.basis === "initiative") notes.push("= unordered: acted on initiative");
+    if (dec.basis === "initiative") notes.push("= No order. The officer acted on initiative.");
     const line = pickLine(state.seed, `report-${dec.day}`, d, act, lastLine(state, d), def?.tags);
     out.push({ department: d, day: dec.day, act, lineId: line.id, text: line.text, notes, orderId: dec.orders[dec.orders.length - 1] ?? null });
   }

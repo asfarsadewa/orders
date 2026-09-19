@@ -59,7 +59,7 @@ async function handleSession(request: Request, env: Env): Promise<Response> {
   }
   const ip = clientIp(request);
   const { success } = await env.SESSION_LIMITER.limit({ key: ip });
-  if (!success) return fail(429, "rate_limited", "too many new runs; try again in a minute", { "Retry-After": "60" });
+  if (!success) return fail(429, "rate_limited", "Too many new runs. Try again in one minute.", { "Retry-After": "60" });
 
   const turnstile = await verifyTurnstile({
     secret: env.TURNSTILE_SECRET,
@@ -82,12 +82,12 @@ async function handleSession(request: Request, env: Env): Promise<Response> {
 /** Checks the session token and both rate limits; returns a Response on failure. */
 async function gate(request: Request, env: Env, sessionToken: string): Promise<Session | Response> {
   const session = await verifySession(env.SESSION_SECRET, sessionToken);
-  if (!session) return fail(401, "session", "the run session is missing or expired; start a new run");
+  if (!session) return fail(401, "session", "The run session is missing or expired. Start a new run.");
   const ip = clientIp(request);
   const bySession = await env.JUDGE_LIMITER.limit({ key: `sid:${session.sid}` });
   const byIp = await env.JUDGE_LIMITER.limit({ key: `ip:${ip}` });
   if (!bySession.success || !byIp.success) {
-    return fail(429, "rate_limited", "too many orders; slow down", { "Retry-After": "10" });
+    return fail(429, "rate_limited", "Too many orders. Slow down.", { "Retry-After": "10" });
   }
   return session;
 }
@@ -105,13 +105,13 @@ async function ask(env: Env, state: unknown, questions: Questions): Promise<Syst
     if (e instanceof APIError) {
       log("error", "typesafe_api_error", { status: e.status, requestId: e.requestId });
       if (e.status === 429 || e.status === 529 || e.status >= 500) {
-        return fail(503, "model_busy", "the model is busy; try again shortly", { "Retry-After": "10" });
+        return fail(503, "model_busy", "The model is busy. Try again.", { "Retry-After": "10" });
       }
       return fail(502, "model_error", `model request failed (${e.status})`);
     }
     if (e instanceof APIConnectionError) {
       log("error", "typesafe_unreachable", { message: e.message });
-      return fail(504, "model_timeout", "the model did not answer in time");
+      return fail(504, "model_timeout", "The model did not answer in time.");
     }
     throw e;
   }

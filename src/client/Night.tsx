@@ -44,8 +44,8 @@ export function NightSheet({ report, onDone }: { report: DayReport; onDone(): vo
           {report.decisions.map((d) => (
             <span key={d.department} className="quiet">
               {OFFICERS[d.department].name}: {(ACTION_BY_ID.get(d.action)?.label ?? d.action).toLowerCase()}
-              {d.basis === "initiative" ? " (unordered)" : d.basis === "clarification" ? " (waiting for an answer)" : ""}
-              {d.allocation && d.allocation.fraction < 0.999 ? ` · ${Math.round(d.allocation.fraction * 100)}% of what it needed` : ""}
+              {d.basis === "initiative" ? " (no order)" : d.basis === "clarification" ? " (waits for an answer)" : ""}
+              {d.allocation && d.allocation.fraction < 0.999 ? ` · ${Math.round(d.allocation.fraction * 100)}% of the request` : ""}
             </span>
           ))}
           {lines.slice(0, shown).map((l, i) => (

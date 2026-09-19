@@ -61,10 +61,10 @@ function crewHurt(w: World, rec: Recorder, d: Department, chance: number, rng: R
 
 function revealContact(w: World, rec: Recorder, truth: World["security"]["contact"], how: string): void {
   if (w.security.contact !== "unknown") return;
-  change(w, rec, "security.contact", truth, `${how}: the movement outside is ${truth === "refugees" ? "refugees, families on foot" : truth === "raiders" ? "an armed band watching the fence" : "scouts from a relief column"}.`);
-  if (truth === "refugees") add(w, rec, "morale", 0.02, "Word spreads: the people outside are families.", 0, 1);
-  if (truth === "raiders") add(w, rec, "morale", -0.03, "Word spreads: the people outside are armed.", 0, 1);
-  if (truth === "relief") add(w, rec, "morale", 0.06, "Word spreads: somebody is coming.", 0, 1);
+  change(w, rec, "security.contact", truth, `${how}. The contact outside is ${truth === "refugees" ? "refugees, families on foot" : truth === "raiders" ? "an armed band near the fence" : "scouts from a relief column"}.`);
+  if (truth === "refugees") add(w, rec, "morale", 0.02, "The contact is families. Morale rose.", 0, 1);
+  if (truth === "raiders") add(w, rec, "morale", -0.03, "The contact is armed. Morale fell.", 0, 1);
+  if (truth === "relief") add(w, rec, "morale", 0.06, "A relief column is near. Morale rose.", 0, 1);
 }
 
 /** The hidden truth about the contact is supplied by the tick through ctx via this slot. */
@@ -108,7 +108,7 @@ const SECURITY: ActionDef[] = [
       const from = ctx.sector && ctx.sector !== "perimeter" ? ctx.sector : dangerSector(w);
       const to = from === "core" ? "habitat" : "core";
       const moved = movePeople(w, rec, from, to, Math.round(16 * f), `Security walked ${Math.round(16 * f)} colonists from the ${from} to the ${to}.`);
-      if (moved) add(w, rec, "morale", 0.01, "People saw the squad bring their neighbours in.", 0, 1);
+      if (moved) add(w, rec, "morale", 0.01, "The escort raised morale.", 0, 1);
       worked(w, "security", 1);
     },
   },
@@ -126,8 +126,8 @@ const SECURITY: ActionDef[] = [
     urge: (w) => Math.max(0, w.security.threat - 0.3),
     apply(w, rec, f) {
       change(w, rec, "security.guarded", true, "A guard stands at the gate tonight.");
-      add(w, rec, "security.threat", -0.08 * f, "The gate is held.", 0, 1);
-      add(w, rec, "security.perimeter", 0.04 * f, "The gate is held.", 0, 1);
+      add(w, rec, "security.threat", -0.08 * f, "The gate is held. Threat decreased.", 0, 1);
+      add(w, rec, "security.perimeter", 0.04 * f, "The gate is held. The perimeter improved.", 0, 1);
       worked(w, "security", 0.7);
     },
   },
@@ -146,8 +146,8 @@ const SECURITY: ActionDef[] = [
     urge: (w) => (w.security.contact === "unknown" ? 0.55 + w.security.threat * 0.5 : 0),
     blocked: (w) => (w.security.contact !== "unknown" ? "the contact is already known" : null),
     apply(w, rec, f, ctx) {
-      revealContact(w, rec, CONTACT_TRUTH.value, "Security went out to look");
-      add(w, rec, "security.threat", -0.15 * f, "Knowing what is out there.", 0, 1);
+      revealContact(w, rec, CONTACT_TRUTH.value, "Security investigated");
+      add(w, rec, "security.threat", -0.15 * f, "The contact is identified. Threat decreased.", 0, 1);
       const withTruck = (ctx.granted.vehicles ?? 0) >= 0.99;
       if (CONTACT_TRUTH.value === "raiders") crewHurt(w, rec, "security", 0.35 * (withTruck ? 0.6 : 1), ctx.rng, "The band fired on the patrol.");
       worked(w, "security", 0.8);
@@ -165,9 +165,9 @@ const SECURITY: ActionDef[] = [
     requests: () => [hours("security", 45)],
     urge: (w) => 0.2 + w.security.threat * 0.4,
     apply(w, rec, f, ctx) {
-      add(w, rec, "security.threat", -0.08 * f, "Patrols on the fence.", 0, 1);
-      add(w, rec, "security.perimeter", 0.03 * f, "Patrols on the fence.", 0, 1);
-      if (w.security.contact === "unknown" && ctx.rng.next() < 0.35 * f) revealContact(w, rec, CONTACT_TRUTH.value, "A patrol got close enough to see");
+      add(w, rec, "security.threat", -0.08 * f, "Patrols on the fence decreased the threat.", 0, 1);
+      add(w, rec, "security.perimeter", 0.03 * f, "Patrols on the fence improved the perimeter.", 0, 1);
+      if (w.security.contact === "unknown" && ctx.rng.next() < 0.35 * f) revealContact(w, rec, CONTACT_TRUTH.value, "A patrol identified the contact");
       worked(w, "security", 0.7);
     },
   },
@@ -185,8 +185,8 @@ const SECURITY: ActionDef[] = [
     requests: () => [hours("security", 70)],
     urge: (w) => Math.max(0, w.security.threat - 0.45) + (1 - w.security.perimeter) * 0.3,
     apply(w, rec, f) {
-      add(w, rec, "security.perimeter", 0.25 * f, "The gate is braced and the fence mended.", 0, 1);
-      change(w, rec, "security.guarded", true, "The work party doubles as a guard.");
+      add(w, rec, "security.perimeter", 0.25 * f, "The gate is braced and the fence is repaired.", 0, 1);
+      change(w, rec, "security.guarded", true, "The work party guards the gate.");
       worked(w, "security", 1);
     },
   },
@@ -207,21 +207,21 @@ const SECURITY: ActionDef[] = [
     blocked: (w) => (w.security.contact === "none" ? "there is nobody outside to engage" : null),
     apply(w, rec, f, ctx) {
       const truth = w.security.contact === "unknown" ? CONTACT_TRUTH.value : w.security.contact;
-      revealContact(w, rec, CONTACT_TRUTH.value, "The squad went out armed and found out the hard way");
+      revealContact(w, rec, CONTACT_TRUTH.value, "The squad engaged");
       if (truth === "raiders") {
-        add(w, rec, "security.threat", -0.5 * f, "The band was driven off.", 0, 1);
-        crewHurt(w, rec, "security", 0.7, ctx.rng, "A firefight at the treeline.", 0.3);
-        crewHurt(w, rec, "security", 0.4, ctx.rng, "A firefight at the treeline.");
-        add(w, rec, "morale", 0.03, "The raiders were driven off.", 0, 1);
+        add(w, rec, "security.threat", -0.5 * f, "The raiders were driven off. Threat decreased.", 0, 1);
+        crewHurt(w, rec, "security", 0.7, ctx.rng, "There was a firefight at the treeline.", 0.3);
+        crewHurt(w, rec, "security", 0.4, ctx.rng, "There was a firefight at the treeline.");
+        add(w, rec, "morale", 0.03, "The raiders were driven off. Morale rose.", 0, 1);
       } else if (truth === "refugees") {
-        add(w, rec, "morale", -0.15, "Security fired on families at the fence.", 0, 1);
-        change(w, rec, "security.contact", "none", "The refugees fled into the cold. Some will not survive it.");
-        add(w, rec, "security.threat", -0.2, "Nobody outside now.", 0, 1);
+        add(w, rec, "morale", -0.15, "Security fired on families at the fence. Morale fell.", 0, 1);
+        change(w, rec, "security.contact", "none", "The refugees fled. There is no contact outside.");
+        add(w, rec, "security.threat", -0.2, "There is no contact outside. Threat decreased.", 0, 1);
       } else if (truth === "relief") {
-        add(w, rec, "morale", -0.1, "Security fired on the relief scouts.", 0, 1);
-        change(w, rec, "security.reliefLost", true, "The relief column will not come to a colony that shoots at it.");
+        add(w, rec, "morale", -0.1, "Security fired on the relief scouts. Morale fell.", 0, 1);
+        change(w, rec, "security.reliefLost", true, "The relief column will not come.");
         change(w, rec, "security.contact", "none", "The scouts withdrew.");
-        change(w, rec, "security.reliefDay", null as unknown as number, "No column is coming.");
+        change(w, rec, "security.reliefDay", null as unknown as number, "No relief column is coming.");
       }
       worked(w, "security", 1);
     },
@@ -240,8 +240,8 @@ const SECURITY: ActionDef[] = [
     urge: (w) => (w.crews.security.fatigue > 0.85 ? 0.4 : 0),
     blocked: (w) => (w.security.threat < 0.5 && w.crews.security.fatigue < 0.7 ? "nothing to withdraw from" : null),
     apply(w, rec) {
-      add(w, rec, "security.perimeter", -0.1, "The fence is unwatched.", 0, 1);
-      add(w, rec, "security.threat", 0.08, "The fence is unwatched.", 0, 1);
+      add(w, rec, "security.perimeter", -0.1, "The fence is not watched. The perimeter fell.", 0, 1);
+      add(w, rec, "security.threat", 0.08, "The fence is not watched. Threat increased.", 0, 1);
       add(w, rec, "crews.security.fatigue", -0.2, "The squad rested inside.", 0, 1);
     },
   },
@@ -263,10 +263,10 @@ const SECURITY: ActionDef[] = [
       const shored = w.tonight.shored;
       const freed = Math.min(w.people.trapped, Math.round(14 * f * (1 + 0.5 * shored)));
       if (freed > 0) {
-        add(w, rec, "people.trapped", -freed, `${freed} colonists dug out of the habitat.`, 0);
+        add(w, rec, "people.trapped", -freed, `${freed} colonists were rescued from the habitat.`, 0);
         const hurt = Math.round(freed * (w.tonight.fieldTeam ? 0.2 : 0.35));
-        if (hurt) add(w, rec, "people.injured", hurt, `${hurt} of the rescued need the ward.`);
-        add(w, rec, "morale", Math.min(0.08, 0.005 * freed), `${freed} people brought out alive.`, 0, 1);
+        if (hurt) add(w, rec, "people.injured", hurt, `${hurt} of the rescued are injured.`);
+        add(w, rec, "morale", Math.min(0.08, 0.005 * freed), `The rescue of ${freed} colonists raised morale.`, 0, 1);
       }
       crewHurt(w, rec, "security", 0.45 * (1 - 0.5 * shored) * f, ctx.rng, "The roof shifted during the dig.", shored > 0 ? 0 : 0.15);
       worked(w, "security", 1);
@@ -287,29 +287,29 @@ const SECURITY: ActionDef[] = [
     urge: (w) => (w.security.contact === "refugees" && w.security.admitted === 0 ? 0.35 : w.security.contact === "relief" && w.security.reliefDay === null ? 0.6 : 0),
     blocked: (w) => (w.security.contact === "none" ? "there is nobody outside to talk to" : null),
     apply(w, rec, f, ctx) {
-      revealContact(w, rec, CONTACT_TRUTH.value, "They answered when called");
+      revealContact(w, rec, CONTACT_TRUTH.value, "The contact answered");
       const truth = w.security.contact;
       if (truth === "refugees") {
         const n = Math.round((18 + ctx.rng.int(10)) * f);
         if (n > 0) {
           add(w, rec, "people.total", n, `${n} refugees admitted through the gate.`);
           add(w, rec, "sectors.habitat.people", n, `${n} refugees housed in the habitat.`);
-          add(w, rec, "people.injured", Math.round(n * 0.25), "Some of the refugees are frostbitten.");
-          add(w, rec, "security.admitted", n, `${n} refugees admitted.`);
-          change(w, rec, "food.days", w.food.days * (w.people.total / (w.people.total + n)), `${n} more mouths: the stores stretch less far.`);
-          add(w, rec, "morale", 0.03, "The colony took them in.", 0, 1);
-          change(w, rec, "security.contact", "none", "Nobody is left outside the gate.");
+          add(w, rec, "people.injured", Math.round(n * 0.25), "Some of the refugees have frostbite.");
+          add(w, rec, "security.admitted", n, `${n} refugees were admitted.`);
+          change(w, rec, "food.days", w.food.days * (w.people.total / (w.people.total + n)), `${n} more people. Food days decreased.`);
+          add(w, rec, "morale", 0.03, "The colony admitted the refugees. Morale rose.", 0, 1);
+          change(w, rec, "security.contact", "none", "There is no contact outside the gate.");
         }
       } else if (truth === "raiders") {
         const paid = Math.min(w.fuel.units, 10);
-        add(w, rec, "fuel.units", -paid, `The band took ${paid} fuel to go away.`, 0);
-        add(w, rec, "food.days", -0.6, "The band took food to go away.", 0);
-        add(w, rec, "security.threat", -0.35 * f, "Paid off, for now.", 0, 1);
-        add(w, rec, "morale", -0.03, "The colony paid tribute.", 0, 1);
+        add(w, rec, "fuel.units", -paid, `The raiders took ${paid} fuel.`, 0);
+        add(w, rec, "food.days", -0.6, "The raiders took food.", 0);
+        add(w, rec, "security.threat", -0.35 * f, "The raiders withdrew. Threat decreased.", 0, 1);
+        add(w, rec, "morale", -0.03, "The tribute lowered morale.", 0, 1);
       } else if (truth === "relief") {
         if (w.security.reliefDay === null && !w.security.reliefLost) {
-          change(w, rec, "security.reliefDay", w.day + 3, "The scouts will bring the column to the pass in three days.");
-          add(w, rec, "morale", 0.08, "Help is coming.", 0, 1);
+          change(w, rec, "security.reliefDay", w.day + 3, "The relief column arrives at the pass in three days.");
+          add(w, rec, "morale", 0.08, "The relief column is coming. Morale rose.", 0, 1);
         }
       }
       worked(w, "security", 0.5);
@@ -327,9 +327,9 @@ const SECURITY: ActionDef[] = [
     requests: () => [hours("security", 90)],
     urge: (w) => (w.security.threat > 0.4 && (w.people.trapped > 0 || Object.values(w.sectors).some((s) => s.fire > 0.3)) ? 0.5 : 0),
     apply(w, rec, f) {
-      change(w, rec, "tonight.escort", true, "Half the squad is with the people moving.");
-      change(w, rec, "security.guarded", true, "Half the squad is on the gate.");
-      add(w, rec, "security.threat", -0.04 * f, "A thin guard on the gate.", 0, 1);
+      change(w, rec, "tonight.escort", true, "Half the squad escorts the people moving.");
+      change(w, rec, "security.guarded", true, "Half the squad guards the gate.");
+      add(w, rec, "security.threat", -0.04 * f, "Half a guard on the gate decreased the threat.", 0, 1);
       worked(w, "security", 1);
     },
   },
@@ -367,7 +367,7 @@ const LOGISTICS: ActionDef[] = [
     requests: () => [hours("logistics", 30)],
     urge: () => 0,
     apply(w, rec) {
-      if (w.food.days > 8 && w.food.ration !== "full") change(w, rec, "food.ration", "full", "Stores are comfortable: full rations resumed.");
+      if (w.food.days > 8 && w.food.ration !== "full") change(w, rec, "food.ration", "full", "Food stock is above eight days. Full rations resumed.");
       worked(w, "logistics", 0.3);
     },
   },
@@ -395,7 +395,7 @@ const LOGISTICS: ActionDef[] = [
       const cap = trips * 12 * (w.tonight.escort ? 1.25 : 1);
       const moved = movePeople(w, rec, from, to, cap, `${trips} truck trips moved ${Math.min(cap, w.sectors[from].people)} colonists from the ${from} to the ${to}.`);
       add(w, rec, "fuel.units", -trips * FUEL.truckTrip, `${trips} trips burned ${trips * FUEL.truckTrip} fuel.`, 0);
-      if (moved > 30) add(w, rec, "morale", -0.01, "The core is crowded.", 0, 1);
+      if (moved > 30) add(w, rec, "morale", -0.01, "Crowding in the core lowered morale.", 0, 1);
       worked(w, "logistics", 1);
     },
   },
@@ -427,10 +427,10 @@ const LOGISTICS: ActionDef[] = [
       }
       add(w, rec, "fuel.units", -trips * FUEL.convoyTrip, `${trips} trucks to the pass burned ${trips * FUEL.convoyTrip} fuel.`, 0);
       if (w.security.contact === "raiders" && w.security.threat > 0.4 && !w.tonight.escort && ctx.rng.next() < 0.35) {
-        add(w, rec, "vehicles.operational", -1, "A truck was lost on the road to the band.", 0);
-        injure(w, rec, 2, "The convoy was shot at on the road.");
+        add(w, rec, "vehicles.operational", -1, "Raiders destroyed a truck on the road.", 0);
+        injure(w, rec, 2, "Raiders fired on the convoy.");
       }
-      if (out > 0) add(w, rec, "morale", -0.02, "Watching the trucks leave.", 0, 1);
+      if (out > 0) add(w, rec, "morale", -0.02, "The departure lowered morale.", 0, 1);
       worked(w, "logistics", 1);
     },
   },
@@ -446,10 +446,10 @@ const LOGISTICS: ActionDef[] = [
     initiativeBase: 0.5,
     requests: () => [fuel(FUEL.pumpsNight), hours("logistics", 10)],
     urge: (w) => (w.power.output < 0.55 && w.water.days < 3 ? 0.6 : w.water.days < 1.5 ? 0.4 : 0.1),
-    blocked: (w) => (w.fuel.units < FUEL.pumpsNight ? "there is not ten units of fuel to hold back" : w.fuel.reservedForPumps ? "fuel is already held for the pumps" : null),
+    blocked: (w) => (w.fuel.units < FUEL.pumpsNight ? "fewer than ten units of fuel remain" : w.fuel.reservedForPumps ? "fuel is already held for the pumps" : null),
     apply(w, rec, f) {
-      if (f >= 0.99) change(w, rec, "fuel.reservedForPumps", true, `${FUEL.pumpsNight} fuel held back for the pumps tonight.`);
-      change(w, rec, "fuel.priority", "pumps", "Tonight the pumps drink before the generator.");
+      if (f >= 0.99) change(w, rec, "fuel.reservedForPumps", true, `${FUEL.pumpsNight} fuel is held for the pumps tonight.`);
+      change(w, rec, "fuel.priority", "pumps", "Tonight the pumps get fuel before the generator.");
       worked(w, "logistics", 0.2);
     },
   },
@@ -467,8 +467,8 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.fuel.priority === "pumps" && w.fuel.units < 30 ? 0.3 : 0),
     blocked: (w) => (w.fuel.priority === "generator" && !w.fuel.reservedForPumps ? "the generator already drinks first" : null),
     apply(w, rec) {
-      change(w, rec, "fuel.priority", "generator", "The generator drinks first tonight.");
-      change(w, rec, "fuel.reservedForPumps", false, "No fuel held back for the pumps.");
+      change(w, rec, "fuel.priority", "generator", "Tonight the generator gets fuel first.");
+      change(w, rec, "fuel.reservedForPumps", false, "No fuel is held for the pumps.");
     },
   },
   {
@@ -485,8 +485,8 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.food.ration === "full" && w.food.days < 4 ? 0.6 : 0),
     blocked: (w) => (w.food.ration !== "full" ? "rations are already reduced" : null),
     apply(w, rec) {
-      change(w, rec, "food.ration", "reduced", "Rations cut to two thirds.");
-      add(w, rec, "morale", -0.03, "Smaller plates.", 0, 1);
+      change(w, rec, "food.ration", "reduced", "Rations are reduced to two thirds.");
+      add(w, rec, "morale", -0.03, "Reduced rations lowered morale.", 0, 1);
     },
   },
   {
@@ -503,8 +503,8 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.food.days < 2 && w.food.ration !== "minimal" ? 0.5 : 0),
     blocked: (w) => (w.food.ration === "minimal" ? "rations are already minimal" : null),
     apply(w, rec) {
-      change(w, rec, "food.ration", "minimal", "Rations cut to the minimum.");
-      add(w, rec, "morale", -0.06, "Hunger rations.", 0, 1);
+      change(w, rec, "food.ration", "minimal", "Rations are reduced to the minimum.");
+      add(w, rec, "morale", -0.06, "Minimal rations lowered morale.", 0, 1);
     },
   },
   {
@@ -521,8 +521,8 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.food.ration !== "full" && w.food.days > 7 ? 0.4 : 0),
     blocked: (w) => (w.food.ration === "full" ? "rations are already full" : null),
     apply(w, rec) {
-      change(w, rec, "food.ration", "full", "Full rations restored.");
-      add(w, rec, "morale", 0.03, "Full plates again.", 0, 1);
+      change(w, rec, "food.ration", "full", "Full rations are restored.");
+      add(w, rec, "morale", 0.03, "Full rations raised morale.", 0, 1);
     },
   },
   {
@@ -539,9 +539,9 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.water.days < 1.5 ? 0.6 : w.water.days < 2.5 && w.water.pumpHealth < 0.5 ? 0.3 : 0),
     blocked: (w) => (w.vehicles.operational === 0 ? "no truck runs" : null),
     apply(w, rec, f, ctx) {
-      add(w, rec, "water.days", 0.9 * f, `Hauled ${(0.9 * f).toFixed(1)} days of water from the reservoir.`, 0, 6);
-      add(w, rec, "fuel.units", -FUEL.truckTrip * f, "The water run burned fuel.", 0);
-      if (w.security.contact === "raiders" && w.security.threat > 0.5 && !w.tonight.escort) crewHurt(w, rec, "logistics", 0.3, ctx.rng, "The water truck was shot at.");
+      add(w, rec, "water.days", 0.9 * f, `The trucks hauled ${(0.9 * f).toFixed(1)} days of water from the reservoir.`, 0, 6);
+      add(w, rec, "fuel.units", -FUEL.truckTrip * f, "The water run used fuel.", 0);
+      if (w.security.contact === "raiders" && w.security.threat > 0.5 && !w.tonight.escort) crewHurt(w, rec, "logistics", 0.3, ctx.rng, "Raiders fired on the water truck.");
       worked(w, "logistics", 0.8);
     },
   },
@@ -560,7 +560,7 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.sectors.infirmary.fire > 0 && !w.medicine.safe ? 0.7 : 0),
     blocked: (w) => (w.medicine.safe ? "the medicine is already in the core" : null),
     apply(w, rec, f) {
-      if (f >= 0.5) change(w, rec, "medicine.safe", true, "The medicine store is in the core, away from the wards.");
+      if (f >= 0.5) change(w, rec, "medicine.safe", true, "The medicine store is in the core.");
       worked(w, "logistics", 0.5);
     },
   },
@@ -579,7 +579,7 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.sectors.works.fire > 0 && !w.fuel.safe ? 0.7 : 0),
     blocked: (w) => (w.fuel.safe ? "the fuel is already in the core" : null),
     apply(w, rec, f) {
-      if (f >= 0.5) change(w, rec, "fuel.safe", true, "The fuel drums are in the core, away from the depot.");
+      if (f >= 0.5) change(w, rec, "fuel.safe", true, "The fuel drums are in the core.");
       worked(w, "logistics", 0.8);
     },
   },
@@ -596,7 +596,7 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.vehicles.operational < w.vehicles.total ? 0.25 : 0),
     blocked: (w) => (w.vehicles.operational >= w.vehicles.total ? "every truck runs" : null),
     apply(w, rec, f) {
-      if (f >= 0.6) add(w, rec, "vehicles.operational", 1, "A truck is back on its wheels.", 0, w.vehicles.total);
+      if (f >= 0.6) add(w, rec, "vehicles.operational", 1, "A truck is repaired.", 0, w.vehicles.total);
       worked(w, "logistics", 0.6);
     },
   },
@@ -614,8 +614,8 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (!w.sectors.habitat.heated && w.weather.tempC < -5 ? 0.5 : 0),
     apply(w, rec, f) {
       const n = Math.round(40 * f);
-      const moved = movePeople(w, rec, "habitat", "core", Math.min(n, w.sectors.habitat.people - w.people.trapped), `${n} colonists sheltered in the core.`);
-      if (moved > 20) add(w, rec, "morale", -0.01, "The core is crowded.", 0, 1);
+      const moved = movePeople(w, rec, "habitat", "core", Math.min(n, w.sectors.habitat.people - w.people.trapped), `${n} colonists moved to shelter in the core.`);
+      if (moved > 20) add(w, rec, "morale", -0.01, "Crowding in the core lowered morale.", 0, 1);
       worked(w, "logistics", 0.7);
     },
   },
@@ -634,8 +634,8 @@ const LOGISTICS: ActionDef[] = [
     blocked: (w) => (w.sectors.core.people <= 25 ? "nobody is sheltering in the core" : null),
     apply(w, rec, f) {
       const n = Math.round((w.sectors.core.people - 20) * f);
-      movePeople(w, rec, "core", "habitat", n, `${n} colonists went home to the habitat.`);
-      add(w, rec, "morale", 0.02, "People are back in their own rooms.", 0, 1);
+      movePeople(w, rec, "core", "habitat", n, `${n} colonists returned to the habitat.`);
+      add(w, rec, "morale", 0.02, "The return to the habitat raised morale.", 0, 1);
       worked(w, "logistics", 0.5);
     },
   },
@@ -653,7 +653,7 @@ const LOGISTICS: ActionDef[] = [
     urge: (w) => (w.fuel.units < 25 && !w.vehicles.held ? 0.3 : 0),
     blocked: (w) => (w.vehicles.held ? "the trucks are already held" : null),
     apply(w, rec) {
-      change(w, rec, "vehicles.held", true, "The trucks stay in the bay.");
+      change(w, rec, "vehicles.held", true, "The trucks are held in the bay.");
     },
   },
   {
@@ -669,7 +669,7 @@ const LOGISTICS: ActionDef[] = [
     urge: () => 0,
     blocked: (w) => (!w.vehicles.held ? "the trucks are not held" : null),
     apply(w, rec) {
-      change(w, rec, "vehicles.held", false, "The trucks may go out.");
+      change(w, rec, "vehicles.held", false, "The trucks are released.");
     },
   },
 ];
@@ -691,7 +691,7 @@ const MEDICAL: ActionDef[] = [
     requests: () => [hours("medical", 30)],
     urge: () => 0,
     apply(w, rec) {
-      change(w, rec, "tonight.treatment", Math.max(w.tonight.treatment, 0.3), "Rounds on the ward.");
+      change(w, rec, "tonight.treatment", Math.max(w.tonight.treatment, 0.3), "Ward rounds are done.");
       worked(w, "medical", 0.4);
     },
   },
@@ -709,9 +709,9 @@ const MEDICAL: ActionDef[] = [
     requests: (w) => [hours("medical", 60), medicine(Math.min(w.medicine.stock, 0.04))],
     urge: (w) => (w.people.critical > 3 || w.people.injured > 20 ? 0.6 : 0.2),
     apply(w, rec, f) {
-      change(w, rec, "medicine.policy", "full", "Everyone who needs treatment gets it.");
-      change(w, rec, "tonight.treatment", Math.max(w.tonight.treatment, f), "Full triage on the ward.");
-      add(w, rec, "morale", 0.02, "The ward is working flat out.", 0, 1);
+      change(w, rec, "medicine.policy", "full", "All patients receive treatment.");
+      change(w, rec, "tonight.treatment", Math.max(w.tonight.treatment, f), "Full triage is in effect.");
+      add(w, rec, "morale", 0.02, "Full treatment raised morale.", 0, 1);
       worked(w, "medical", 1);
     },
   },
@@ -729,9 +729,9 @@ const MEDICAL: ActionDef[] = [
     urge: (w) => (w.medicine.stock < 0.2 && w.medicine.policy === "full" ? 0.5 : 0),
     blocked: (w) => (w.medicine.policy === "critical_only" ? "the ward already treats only the critical" : null),
     apply(w, rec) {
-      change(w, rec, "medicine.policy", "critical_only", "Only the critical are treated; the rest wait.");
-      change(w, rec, "tonight.treatment", Math.max(w.tonight.treatment, 0.6), "Triage for the critical.");
-      add(w, rec, "morale", -0.02, "The walking wounded are sent back to their bunks.", 0, 1);
+      change(w, rec, "medicine.policy", "critical_only", "Only critical patients receive treatment.");
+      change(w, rec, "tonight.treatment", Math.max(w.tonight.treatment, 0.6), "Triage for critical patients is in effect.");
+      add(w, rec, "morale", -0.02, "Untreated patients lowered morale.", 0, 1);
       worked(w, "medical", 0.5);
     },
   },
@@ -750,7 +750,7 @@ const MEDICAL: ActionDef[] = [
     requests: () => [hours("medical", 50)],
     urge: (w) => (w.people.trapped > 0 ? 0.6 : Object.values(w.sectors).some((s) => s.fire > 0.4) ? 0.4 : 0),
     apply(w, rec, f, ctx) {
-      change(w, rec, "tonight.fieldTeam", true, "Medics are at the site.");
+      change(w, rec, "tonight.fieldTeam", true, "Medics are at the rescue site.");
       const stabilised = Math.min(w.people.critical, Math.round(2 * f));
       if (stabilised) {
         add(w, rec, "people.critical", -stabilised, `${stabilised} critical patients stabilised in the field.`, 0);
@@ -776,7 +776,7 @@ const MEDICAL: ActionDef[] = [
     blocked: (w) => (w.medicine.ward === "core" ? "the patients are already in the core" : null),
     apply(w, rec, f) {
       if (f >= 0.5) {
-        movePeople(w, rec, "infirmary", "core", w.sectors.infirmary.people, "The wards moved into the core.");
+        movePeople(w, rec, "infirmary", "core", w.sectors.infirmary.people, "The wards moved to the core.");
         change(w, rec, "medicine.ward", "core", "The patients are in the core.");
       }
       worked(w, "medical", 0.8);
@@ -815,8 +815,8 @@ const MEDICAL: ActionDef[] = [
     requests: () => [hours("medical", 40)],
     urge: (w) => (w.water.contaminated ? 0.7 : 0),
     apply(w, rec) {
-      change(w, rec, "tonight.quarantine", true, "The sick are kept apart and the water is boiled.");
-      add(w, rec, "morale", -0.02, "Quarantine lines in the corridors.", 0, 1);
+      change(w, rec, "tonight.quarantine", true, "Quarantine is in effect. The water is boiled.");
+      add(w, rec, "morale", -0.02, "The quarantine lowered morale.", 0, 1);
       worked(w, "medical", 0.8);
     },
   },
@@ -832,7 +832,7 @@ const MEDICAL: ActionDef[] = [
     requests: (w) => [hours("medical", 40), medicine(Math.min(w.medicine.stock, 0.02))],
     urge: (w) => (w.weather.tempC < -8 && (!w.sectors.habitat.heated || w.power.output < 0.6) ? 0.5 : 0.1),
     apply(w, rec) {
-      change(w, rec, "tonight.coldResponse", true, "Blankets, warm rooms and a cold-injury watch.");
+      change(w, rec, "tonight.coldResponse", true, "Cold response is in effect.");
       worked(w, "medical", 0.7);
     },
   },
@@ -848,8 +848,8 @@ const MEDICAL: ActionDef[] = [
     requests: () => [],
     urge: (w) => (w.crews.medical.fatigue > 0.75 ? 0.5 : 0),
     apply(w, rec) {
-      add(w, rec, "crews.medical.fatigue", -0.35, "The staff slept.", 0, 1);
-      change(w, rec, "tonight.treatment", Math.max(w.tonight.treatment, 0.2), "A skeleton crew on the ward.");
+      add(w, rec, "crews.medical.fatigue", -0.35, "The medical staff rested.", 0, 1);
+      change(w, rec, "tonight.treatment", Math.max(w.tonight.treatment, 0.2), "A reduced crew is on the ward.");
     },
   },
 ];
@@ -895,10 +895,10 @@ const ENGINEERING: ActionDef[] = [
       const burning = (["core", "habitat", "works", "infirmary"] as SectorId[]).filter((s) => w.sectors[s].fire > 0);
       const s = ctx.sector && burning.includes(ctx.sector) ? ctx.sector : burning.sort((a, b) => w.sectors[b].fire - w.sectors[a].fire)[0];
       const fire = w.sectors[s].fire;
-      change(w, rec, `tonight.fireFought.${s}`, f, `Fire crews in ${s} at ${Math.round(f * 100)}% strength.`);
-      add(w, rec, `sectors.${s}.fire`, -0.25 * f, `The fire in ${s} was beaten back during the day.`, 0, 1);
-      add(w, rec, "water.days", -0.3 * f, "Water spent on the fire.", 0);
-      crewHurt(w, rec, "engineering", 0.5 * fire * f, ctx.rng, `Burns fighting the ${s} fire.`, fire > 0.7 ? 0.2 : 0);
+      change(w, rec, `tonight.fireFought.${s}`, f, `Fire crews are in ${s} at ${Math.round(f * 100)}% strength.`);
+      add(w, rec, `sectors.${s}.fire`, -0.25 * f, `The fire in ${s} was reduced during the day.`, 0, 1);
+      add(w, rec, "water.days", -0.3 * f, "The fire crews used water.", 0);
+      crewHurt(w, rec, "engineering", 0.5 * fire * f, ctx.rng, `The ${s} fire burned a crew member.`, fire > 0.7 ? 0.2 : 0);
       worked(w, "engineering", 1);
     },
   },
@@ -936,8 +936,8 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (w.sectors.core.fire > 0.5 ? 0.5 : 0),
     blocked: (w) => (w.sectors.core.fire === 0 ? "the core is not burning" : null),
     apply(w, rec) {
-      change(w, rec, "power.isolated", 2, "The generator is shut in behind fire doors for two days: output capped at 40%.");
-      add(w, rec, "sectors.core.fire", -0.2, "Starved of air, the fire slowed.", 0, 1);
+      change(w, rec, "power.isolated", 2, "The generator is isolated for two days. Output is capped at 40%.");
+      add(w, rec, "sectors.core.fire", -0.2, "The isolation slowed the fire.", 0, 1);
       worked(w, "engineering", 0.5);
     },
   },
@@ -956,7 +956,7 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (!w.sectors[w.medicine.ward].heated && w.people.critical > 0 ? 0.7 : 0),
     blocked: (w) => (w.power.priority === "infirmary" ? "the infirmary already has priority" : null),
     apply(w, rec) {
-      change(w, rec, "power.priority", "infirmary", "The infirmary is never cut.");
+      change(w, rec, "power.priority", "infirmary", "The infirmary has power priority.");
     },
   },
   {
@@ -974,7 +974,7 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (!w.sectors.habitat.heated && w.weather.tempC < -5 ? 0.5 : 0),
     blocked: (w) => (w.power.priority === "habitat" ? "the habitat already has priority" : null),
     apply(w, rec) {
-      change(w, rec, "power.priority", "habitat", "The habitat is never cut.");
+      change(w, rec, "power.priority", "habitat", "The habitat has power priority.");
     },
   },
   {
@@ -992,7 +992,7 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (!w.sectors.works.heated && w.weather.tempC < -8 ? 0.5 : w.water.days < 2 ? 0.3 : 0),
     blocked: (w) => (w.power.priority === "works" ? "the pumps already have priority" : null),
     apply(w, rec) {
-      change(w, rec, "power.priority", "works", "The pumps and the pipes are never cut.");
+      change(w, rec, "power.priority", "works", "The works have power priority.");
     },
   },
   {
@@ -1009,8 +1009,8 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (w.power.output < 0.7 && !w.power.shedding ? 0.5 : 0),
     blocked: (w) => (w.power.shedding ? "load is already shed" : null),
     apply(w, rec) {
-      change(w, rec, "power.shedding", true, "Workshop, corridor lights and comforts off.");
-      add(w, rec, "morale", -0.02, "The corridors went dark.", 0, 1);
+      change(w, rec, "power.shedding", true, "Non-essential load is shed.");
+      add(w, rec, "morale", -0.02, "Load shedding lowered morale.", 0, 1);
     },
   },
   {
@@ -1026,8 +1026,8 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (w.power.shedding && w.power.output > 0.9 ? 0.4 : 0),
     blocked: (w) => (!w.power.shedding ? "nothing is shed" : null),
     apply(w, rec) {
-      change(w, rec, "power.shedding", false, "Lights back on.");
-      add(w, rec, "morale", 0.02, "The corridors are lit again.", 0, 1);
+      change(w, rec, "power.shedding", false, "Full load is restored.");
+      add(w, rec, "morale", 0.02, "The restored load raised morale.", 0, 1);
     },
   },
   {
@@ -1062,7 +1062,7 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (w.power.reservePolicy === "bridge" && w.power.reserve < 0.3 ? 0.4 : 0),
     blocked: (w) => (w.power.reservePolicy === "hold" ? "the reserve is already held" : null),
     apply(w, rec) {
-      change(w, rec, "power.reservePolicy", "hold", "The battery is kept for a worse night.");
+      change(w, rec, "power.reservePolicy", "hold", "The battery is held.");
     },
   },
   {
@@ -1098,7 +1098,7 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (w.water.pipesFrozen ? 0.7 : 0),
     blocked: (w) => (!w.water.pipesFrozen ? "the pipes are not frozen" : null),
     apply(w, rec, f) {
-      add(w, rec, "fuel.units", -FUEL.thawDay * f, "Heaters ran on fuel.", 0);
+      add(w, rec, "fuel.units", -FUEL.thawDay * f, "The heaters used fuel.", 0);
       if (f >= 0.5) change(w, rec, "water.pipesFrozen", false, "The pipes are thawed.");
       worked(w, "engineering", 1);
     },
@@ -1116,14 +1116,14 @@ const ENGINEERING: ActionDef[] = [
     requests: () => [hours("engineering", 80)],
     urge: (w) => (w.people.trapped > 0 ? 0.7 : w.shelter.integrity < 0.6 ? 0.5 : 0),
     apply(w, rec, f, ctx) {
-      add(w, rec, "shelter.integrity", 0.2 * f, "Props and beams under the habitat roof.", 0, 1);
+      add(w, rec, "shelter.integrity", 0.2 * f, "The habitat roof is shored.", 0, 1);
       change(w, rec, "tonight.shored", f, "The rescue site is shored.");
       const freed = Math.min(w.people.trapped, Math.round(6 * f));
       if (freed > 0) {
-        add(w, rec, "people.trapped", -freed, `Engineering opened a way to ${freed} of the trapped.`, 0);
-        add(w, rec, "people.injured", Math.round(freed * 0.3), "Some of them need the ward.");
+        add(w, rec, "people.trapped", -freed, `Engineering freed ${freed} of the trapped.`, 0);
+        add(w, rec, "people.injured", Math.round(freed * 0.3), "Some of the freed are injured.");
       }
-      crewHurt(w, rec, "engineering", 0.3 * f, ctx.rng, "A beam came down during the shoring.");
+      crewHurt(w, rec, "engineering", 0.3 * f, ctx.rng, "A beam fell during the shoring.");
       worked(w, "engineering", 1);
     },
   },
@@ -1142,8 +1142,8 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (w.weather.tempC < -12 && w.power.output < 0.8 && w.power.generatorHealth > 0.4 ? 0.3 : 0),
     blocked: (w) => (w.power.generatorHealth < 0.3 ? "the generator would not survive it" : w.weather.tempC > -10 || w.power.output >= 0.85 ? "no need to run hot tonight" : null),
     apply(w, rec) {
-      change(w, rec, "tonight.overrun", true, "The generator runs above rating tonight.");
-      add(w, rec, "power.generatorHealth", -0.05, "Wear from running hot.", 0, 1);
+      change(w, rec, "tonight.overrun", true, "The generator runs above its rating tonight.");
+      add(w, rec, "power.generatorHealth", -0.05, "Running hot reduced generator health.", 0, 1);
     },
   },
   {
@@ -1160,7 +1160,7 @@ const ENGINEERING: ActionDef[] = [
     urge: (w) => (w.sectors.core.fire > 0.75 || w.crews.engineering.fatigue > 0.85 ? 0.4 : 0),
     blocked: (w) => (w.sectors.core.fire < 0.3 && w.sectors.works.fire < 0.3 && w.crews.engineering.fatigue < 0.7 ? "the crew is not in danger" : null),
     apply(w, rec) {
-      add(w, rec, "crews.engineering.fatigue", -0.2, "The crew pulled back and rested.", 0, 1);
+      add(w, rec, "crews.engineering.fatigue", -0.2, "The engineering crew withdrew and rested.", 0, 1);
     },
   },
 ];
