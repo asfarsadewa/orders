@@ -105,8 +105,9 @@ const SECURITY: ActionDef[] = [
     urge: (w) => (w.people.trapped > 0 || Object.values(w.sectors).some((s) => s.fire > 0.3) ? 0.5 : 0.1),
     apply(w, rec, f, ctx) {
       change(w, rec, "tonight.escort", true, "Security is with the convoy and the people moving on foot.");
-      const from = ctx.sector && ctx.sector !== "perimeter" && ctx.sector !== "core" ? ctx.sector : dangerSector(w);
-      const moved = movePeople(w, rec, from, "core", Math.round(16 * f), `Security walked ${Math.round(16 * f)} colonists from ${from} to the core.`);
+      const from = ctx.sector && ctx.sector !== "perimeter" ? ctx.sector : dangerSector(w);
+      const to = from === "core" ? "habitat" : "core";
+      const moved = movePeople(w, rec, from, to, Math.round(16 * f), `Security walked ${Math.round(16 * f)} colonists from the ${from} to the ${to}.`);
       if (moved) add(w, rec, "morale", 0.01, "People saw the squad bring their neighbours in.", 0, 1);
       worked(w, "security", 1);
     },
@@ -389,9 +390,10 @@ const LOGISTICS: ActionDef[] = [
     blocked: (w) => (w.vehicles.operational === 0 ? "no truck runs" : w.vehicles.held ? "the trucks are held in the bay" : null),
     apply(w, rec, f, ctx) {
       const trips = Math.floor(w.vehicles.operational * 2 * f);
-      const from = ctx.sector && ctx.sector !== "perimeter" && ctx.sector !== "core" ? ctx.sector : dangerSector(w);
+      const from = ctx.sector && ctx.sector !== "perimeter" ? ctx.sector : dangerSector(w);
+      const to = from === "core" ? "habitat" : "core";
       const cap = trips * 12 * (w.tonight.escort ? 1.25 : 1);
-      const moved = movePeople(w, rec, from, "core", cap, `${trips} truck trips moved ${Math.min(cap, w.sectors[from].people)} colonists from ${from} to the core.`);
+      const moved = movePeople(w, rec, from, to, cap, `${trips} truck trips moved ${Math.min(cap, w.sectors[from].people)} colonists from the ${from} to the ${to}.`);
       add(w, rec, "fuel.units", -trips * FUEL.truckTrip, `${trips} trips burned ${trips * FUEL.truckTrip} fuel.`, 0);
       if (moved > 30) add(w, rec, "morale", -0.01, "The core is crowded.", 0, 1);
       worked(w, "logistics", 1);

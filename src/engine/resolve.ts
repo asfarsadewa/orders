@@ -313,7 +313,7 @@ export function decideAll(state: GameState, world: World): Decided[] {
     let basis: Decision["basis"] = "routine";
     let clarify: Decision["clarify"];
     const routineCand: Candidate = { action: routine.id, utility: 0, terms: [{ name: "routine", value: 0, note: "what the department does when nothing else is asked" }], feasible: true };
-    const clarifyCand: Candidate = { action: clarifyFor(d).id, utility: need.utility, terms: need.terms, feasible: today.length > 0 };
+    const clarifyCand: Candidate = { action: clarifyFor(d).id, utility: need.utility, terms: need.terms, feasible: today.length > 0, ...(today.length ? {} : { infeasibleReason: "no order to ask about" }) };
     if (openQuestion) {
       // The officer asked and was not answered: they hold to routine and wait.
       chosen = clarifyFor(d);
