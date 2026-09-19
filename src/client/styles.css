@@ -220,6 +220,7 @@ p {
 .app {
   min-height: 100%;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto 1fr auto;
   max-width: 1560px;
   margin: 0 auto;
@@ -234,6 +235,11 @@ p {
   flex-wrap: wrap;
   padding: 14px 0 12px;
   border-bottom: 1px solid var(--rule);
+}
+
+.top .row {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .wordmark {
@@ -315,6 +321,64 @@ footer .x svg {
   fill: currentColor;
 }
 
+/* gate */
+
+.gate {
+  min-height: 100vh;
+  display: grid;
+  align-content: safe center;
+  justify-items: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background: var(--bg);
+}
+
+.gate-inner {
+  width: min(1040px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.gate-mark {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.gate-mark .wordmark {
+  font-size: 44px;
+}
+
+.gate-art {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+}
+
+.gate-brief {
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--ink-2);
+  max-width: 68ch;
+}
+
+.gate-actions .primary {
+  height: 48px;
+  padding: 0 26px;
+  font-size: 16px;
+  letter-spacing: 0.16em;
+}
+
+.gate-actions .ghost {
+  height: 48px;
+}
+
+.gate-note {
+  font-size: 13px;
+  line-height: 19px;
+}
+
 /* title */
 
 .title {
@@ -327,7 +391,7 @@ footer .x svg {
 .title h2 {
   font-family: var(--display);
   font-weight: 700;
-  font-size: 80px;
+  font-size: clamp(40px, 6vw, 80px);
   line-height: 0.92;
   margin: 0;
   letter-spacing: 0.01em;
@@ -1151,6 +1215,7 @@ footer .x svg {
   font-size: 11.5px;
   line-height: 18px;
   font-stretch: 87.5%;
+  flex-wrap: wrap;
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -1393,7 +1458,7 @@ footer .x svg {
 .ending h2 {
   font-family: var(--display);
   font-weight: 800;
-  font-size: 76px;
+  font-size: clamp(40px, 6vw, 76px);
   margin: 0;
   line-height: 0.95;
   letter-spacing: 0.02em;
@@ -1515,4 +1580,85 @@ footer .x svg {
   height: 1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
+}
+
+/* phones */
+
+@media (max-width: 760px) {
+  .wordmark {
+    font-size: 28px;
+  }
+
+  .wordmark small {
+    display: none;
+  }
+
+  .clock {
+    gap: 10px;
+  }
+
+  .clock .day {
+    font-size: 28px;
+  }
+
+  .ctl,
+  .primary,
+  .tab {
+    padding: 0 10px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .title {
+    gap: 22px;
+    padding: 24px 0 40px;
+  }
+
+  .title .modes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .roster {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .roster .card img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .composer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .composer .side {
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat .v {
+    font-size: 22px;
+    line-height: 26px;
+  }
+
+  .gate-mark .wordmark {
+    font-size: 34px;
+  }
+
+  .gate-brief {
+    font-size: 16px;
+    line-height: 25px;
+  }
+
+  .night-overlay .sheet > header b {
+    font-size: 30px;
+  }
+
+  .drawer h3 {
+    font-size: 18px;
+  }
+
+  .scores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

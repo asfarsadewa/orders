@@ -5,6 +5,7 @@ import { fetchConfig, type Config } from "./api";
 import { audio } from "./audio";
 import { Composer } from "./Composer";
 import { EndingScreen } from "./Ending";
+import { Gate } from "./Gate";
 import { Help } from "./Help";
 import { useAudioSettings, useRun, loadSave } from "./hooks";
 import { Inspector, type InspectorTarget } from "./Inspector";
@@ -16,7 +17,7 @@ import { Replay } from "./Replay";
 import { StatusBoard } from "./Status";
 import { Title } from "./Title";
 
-type View = "title" | "run" | "help" | "replay";
+type View = "gate" | "title" | "run" | "help" | "replay";
 
 function XMark() {
   return (
@@ -30,7 +31,7 @@ export function App() {
   const run = useRun();
   const [config, setConfig] = useState<Config | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
-  const [view, setView] = useState<View>("title");
+  const [view, setView] = useState<View>("gate");
   const [inspect, setInspect] = useState<InspectorTarget | null>(null);
   const [sector, setSector] = useState<SectorId | null>(null);
   const [canResume, setCanResume] = useState(false);
@@ -98,6 +99,15 @@ export function App() {
     audio.unlock();
     audio.setSettings({ [k]: !settings[k] });
   };
+
+  const enter = (sound: boolean) => {
+    audio.unlock();
+    if (!sound) audio.setSettings({ music: false, sfx: false, voice: false });
+    else audio.music("title");
+    setView("title");
+  };
+
+  if (view === "gate") return <Gate onEnter={enter} />;
 
   const showRun = view === "run" && state;
   return (
