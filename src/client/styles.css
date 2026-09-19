@@ -753,7 +753,16 @@ footer .x svg {
 }
 
 .officer > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
+  padding-bottom: 14px;
+}
+
+.officer .traits,
+.officer .stance {
+  display: block;
 }
 
 @media (max-width: 480px) {
