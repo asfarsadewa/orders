@@ -24,7 +24,7 @@ The model understands; the game decides. Jev returns typed probabilities about o
 ## Environment notes
 
 - `TYPESAFE_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `ELEVENLABS_API_KEY` are set at Windows user scope.
-- `CLOUDFLARE_API_TOKEN` in the environment has only Turnstile scope. Deploys and `wrangler secret put` must run with it removed (`env -u CLOUDFLARE_API_TOKEN npx wrangler deploy`) so wrangler uses the OAuth login. Turnstile commands need it plus `CLOUDFLARE_ACCOUNT_ID=0c2d9127ae2095948325cb0ff08583cb`.
+- `CLOUDFLARE_API_TOKEN` in the environment has only Turnstile scope. Deploys and `wrangler secret put` must run with it removed (`env -u CLOUDFLARE_API_TOKEN npx wrangler deploy`) so wrangler uses the OAuth login. Turnstile commands need it plus `CLOUDFLARE_ACCOUNT_ID`, which is set at Windows user scope like the keys above. Do not write the id into any committed file.
 - The zone `asfarlab.fun` is on this account; the custom domain is declared in `wrangler.jsonc` `routes` with `custom_domain: true`.
 - Vite dev server quirk: after it restarts itself, served modules can reference stale dependency hashes and the page hangs blank. Stop and restart `npm run dev`.
 - Shell heredocs here truncate above roughly 10 KB and mangle backslash escapes; write large files with the Write tool.
