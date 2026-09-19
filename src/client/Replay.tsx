@@ -66,9 +66,11 @@ export function Replay({ state, onBack }: { state: GameState; onBack(): void }) 
               ))}
               {report.decisions.map((d) => (
                 <div className="entry say" key={d.department}>
-                  <div className="text" data-who={OFFICERS[d.department].name}>
-                    {(ACTION_BY_ID.get(d.action)?.label ?? d.action).toLowerCase()} <span className="act">{d.basis}</span>
+                  <div className="who">
+                    <b>{OFFICERS[d.department].name}</b>
+                    <span className="act">{d.basis}</span>
                   </div>
+                  <div className="text">{(ACTION_BY_ID.get(d.action)?.label ?? d.action).toLowerCase()}</div>
                   <div className="notes">
                     {d.effects.slice(0, 4).map((e, i) => (
                       <span key={i}>{e.note}</span>

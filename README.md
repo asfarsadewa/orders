@@ -59,6 +59,7 @@ Nothing is generated while the game runs. Everything below is produced once by a
 - **Voice**: Gemini TTS, one clip per authored line, 184 clips (`npm run voice`).
 - **Sound**: ElevenLabs text-to-sound-effects, twelve cues (`npm run sfx`).
 - **Music**: Lyria 3.5, three tracks: title, day, night (`npm run music`).
+- **Type**: three registers. Big Shoulders (Display and Text) is the station's signage, Literata is what people say, Martian Mono is what the machine measured and what you typed. All from Google Fonts.
 
 ## Stack
 

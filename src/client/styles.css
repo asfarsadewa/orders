@@ -1,8 +1,10 @@
 /* orders
    A dark command post. Near-black cool ground, bone-white ink, amber for
    command and warning, red for critical, green for acknowledged, blue for a
-   note. IBM Plex Mono for everything, Xanh Mono for the wordmark only.
-   21px rhythm, no rounded corners, no gradients. */
+   note. Three type registers: Big Shoulders (Display above 20px, Text for
+   labels) is the station's signage, always caps and tracked; Literata is
+   everything a person says; Martian Mono is everything the machine measured
+   or the commander typed, and every number. No rounded corners, no gradients. */
 
 :root {
   color-scheme: dark;
@@ -24,11 +26,16 @@
   --blue: #84adff;
   --blue-bg: rgba(132, 173, 255, 0.12);
   --sel: rgba(230, 232, 227, 0.18);
-  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --display: "Xanh Mono", "IBM Plex Mono", ui-monospace, monospace;
-  --fs: 13.5px;
-  --lh: 21px;
-  --ctl: 30px;
+  --display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --label: "Big Shoulders Text", "Arial Narrow", sans-serif;
+  --body: "Literata", Georgia, serif;
+  --mono: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs: 15px;
+  --lh: 23px;
+  --fs-mono: 12.5px;
+  --lh-mono: 19px;
+  --track: 0.16em;
+  --ctl: 40px;
 }
 
 * {
@@ -44,7 +51,7 @@ body {
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: var(--fs);
   line-height: var(--lh);
   -webkit-font-smoothing: antialiased;
@@ -122,10 +129,21 @@ p {
   font-variant-numeric: tabular-nums;
 }
 
+/* The three registers as classes, for the few places markup needs them. */
+
 .caps {
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--label);
+  font-weight: 600;
   font-size: 11px;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
+  font-stretch: 87.5%;
 }
 
 /* controls: every control in a row shares one box */
@@ -136,11 +154,23 @@ p {
   display: inline-flex;
   align-items: center;
   height: var(--ctl);
-  padding: 0 12px;
+  padding: 0 14px;
   border: 1px solid var(--rule);
   background: var(--panel);
   line-height: 1;
   white-space: nowrap;
+  font-family: var(--label);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ctl input {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .ctl:hover,
@@ -159,7 +189,8 @@ p {
   background: var(--amber);
   color: #1a1400;
   border-color: var(--amber);
-  font-weight: 600;
+  font-weight: 800;
+  font-size: 14px;
 }
 
 .primary:hover:not(:disabled) {
@@ -208,32 +239,49 @@ p {
 .wordmark {
   margin: 0;
   font-family: var(--display);
-  font-weight: 400;
-  font-size: 26px;
+  font-weight: 800;
+  font-size: 34px;
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .wordmark small {
-  font-family: var(--mono);
-  font-size: 11px;
+  font-family: var(--label);
+  font-weight: 600;
+  font-size: 12px;
   color: var(--dim);
-  margin-left: 12px;
-  letter-spacing: 0.08em;
+  margin-left: 14px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  vertical-align: 3px;
+  vertical-align: 4px;
 }
 
 .clock {
   display: flex;
-  gap: 18px;
+  gap: 14px;
   align-items: baseline;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--label);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
 }
 
 .clock .day {
-  font-size: 18px;
-  font-weight: 600;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.clock .num {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-stretch: 87.5%;
 }
 
 footer {
@@ -244,7 +292,11 @@ footer {
   padding: 16px 0 20px;
   border-top: 1px solid var(--rule);
   color: var(--dim);
+  font-family: var(--label);
+  font-weight: 600;
   font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 footer a {
@@ -269,21 +321,29 @@ footer .x svg {
   display: grid;
   gap: 32px;
   padding: 40px 0 60px;
-  max-width: 880px;
+  max-width: 960px;
 }
 
 .title h2 {
   font-family: var(--display);
-  font-weight: 400;
-  font-size: 44px;
-  line-height: 1.05;
+  font-weight: 700;
+  font-size: 80px;
+  line-height: 0.92;
   margin: 0;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.title h2 em {
+  font-style: normal;
+  color: var(--amber);
 }
 
 .title .lead {
   color: var(--ink-2);
   max-width: 62ch;
+  font-size: 17px;
+  line-height: 27px;
 }
 
 .title .keyart {
@@ -327,12 +387,17 @@ footer .x svg {
 }
 
 .mode b {
-  font-weight: 600;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .mode span {
   color: var(--dim);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 18px;
 }
 
@@ -356,12 +421,18 @@ footer .x svg {
 }
 
 .roster .card b {
-  font-weight: 600;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .roster .card span {
   color: var(--dim);
-  font-size: 12px;
+  font-style: italic;
+  font-size: 13px;
   line-height: 18px;
 }
 
@@ -406,13 +477,15 @@ footer .x svg {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-bottom: 1px solid var(--rule);
   color: var(--dim);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: var(--label);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: var(--track);
   text-transform: uppercase;
-  min-height: 34px;
+  min-height: 36px;
 }
 
 .map-panel {
@@ -429,22 +502,26 @@ footer .x svg {
 
 .map text {
   font-family: var(--mono);
+  font-size: 11px;
   fill: var(--ink);
 }
 
 .map .label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: var(--label);
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
   fill: var(--dim);
 }
 
 .map .letter {
-  font-size: 22px;
-  font-weight: 600;
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 800;
 }
 
 .map .count {
-  font-size: 12px;
+  font-size: 11px;
   fill: var(--ink-2);
 }
 
@@ -507,7 +584,10 @@ footer .x svg {
 }
 
 .map .weather {
-  font-size: 12px;
+  font-family: var(--label);
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
   fill: var(--ink-2);
 }
 
@@ -515,15 +595,20 @@ footer .x svg {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-top: 1px solid var(--rule);
   color: var(--dim);
-  font-size: 12px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 18px;
+  font-stretch: 87.5%;
 }
 
 .map-legend b {
   color: var(--ink);
-  font-weight: 500;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 14px;
 }
 
 /* status board */
@@ -547,22 +632,26 @@ footer .x svg {
 
 .stat .k {
   color: var(--dim);
+  font-family: var(--label);
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--track);
   text-transform: uppercase;
 }
 
 .stat .v {
-  font-size: 20px;
+  font-family: var(--mono);
+  font-size: 26px;
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  line-height: 24px;
+  line-height: 30px;
 }
 
 .stat .s {
   color: var(--dim);
-  font-size: 12px;
-  line-height: 18px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 16px;
+  font-stretch: 87.5%;
 }
 
 .stat .bar {
@@ -609,9 +698,16 @@ footer .x svg {
   align-items: baseline;
 }
 
+.crises {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-2);
+}
+
 .crises .crisis .tag {
   color: var(--red);
-  font-weight: 600;
+  font-family: var(--mono);
+  font-weight: 700;
 }
 
 .crises .crisis .tag.low {
@@ -641,9 +737,9 @@ footer .x svg {
 
 .officer {
   display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 10px;
-  padding: 10px 12px;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  padding: 12px 14px;
   border-right: 1px solid var(--rule-2);
   text-align: left;
   background: transparent;
@@ -685,8 +781,8 @@ footer .x svg {
 }
 
 .officer img {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   background: var(--panel-2);
   border: 1px solid var(--rule);
 }
@@ -700,41 +796,53 @@ footer .x svg {
 }
 
 .officer .who b {
-  font-weight: 600;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .officer .who .dept {
   color: var(--dim);
+  font-family: var(--label);
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--track);
   text-transform: uppercase;
 }
 
 .officer .traits {
   color: var(--dim);
-  font-size: 12px;
-  line-height: 17px;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 18px;
 }
 
 .officer .stance {
   margin-top: 4px;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 14px;
+  line-height: 19px;
 }
 
 .officer .stance b {
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-family: var(--label);
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   font-size: 11px;
+  margin-right: 4px;
 }
 
 .officer .trust {
   position: absolute;
-  right: 12px;
+  right: 14px;
   bottom: 8px;
   color: var(--dim);
+  font-family: var(--mono);
   font-size: 11px;
+  font-stretch: 87.5%;
 }
 
 .stance.acknowledge b,
@@ -812,8 +920,10 @@ footer .x svg {
 
 .entry .meta {
   color: var(--dim);
+  font-family: var(--label);
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--track);
   text-transform: uppercase;
   display: flex;
   gap: 10px;
@@ -822,34 +932,76 @@ footer .x svg {
 
 .entry.order .text {
   border-left: 2px solid var(--amber);
-  padding-left: 10px;
+  padding-left: 12px;
   white-space: pre-wrap;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 21px;
 }
 
 .entry.say {
-  padding-left: 12px;
+  padding-left: 14px;
 }
 
-.entry.say .text::before {
-  content: attr(data-who) " ";
-  color: var(--ink-2);
-  font-weight: 600;
+.entry.say .who {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.entry.say .who b {
+  font-family: var(--label);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.entry.say .text {
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .entry.say .act {
   color: var(--dim);
+  font-family: var(--label);
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  margin-left: 8px;
+}
+
+.act.acknowledge,
+.act.report_success,
+.act.confirm_priority {
+  color: var(--green);
+}
+
+.act.clarify {
+  color: var(--blue);
+}
+
+.act.warn,
+.act.object,
+.act.report_partial,
+.act.challenge_precedent,
+.act.request_exception {
+  color: var(--amber);
+}
+
+.act.report_failure,
+.act.report_unexpected {
+  color: var(--red);
 }
 
 .entry .notes {
   display: grid;
   gap: 0;
   color: var(--dim);
+  font-family: var(--mono);
   font-size: 12px;
   line-height: 18px;
+  font-stretch: 87.5%;
   padding-left: 12px;
 }
 
@@ -865,14 +1017,22 @@ footer .x svg {
 }
 
 .entry.night .text {
-  font-weight: 600;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
 }
 
 .entry.night .fx {
   display: grid;
   gap: 0;
+  font-family: var(--mono);
   font-size: 12px;
   line-height: 18px;
+  font-stretch: 87.5%;
   color: var(--ink-2);
 }
 
@@ -886,10 +1046,12 @@ footer .x svg {
 
 .entry.morning {
   color: var(--amber);
-  letter-spacing: 0.08em;
+  font-family: var(--label);
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-size: 11px;
-  padding-top: 6px;
+  font-size: 12px;
+  padding-top: 8px;
   border-top: 1px solid var(--rule);
 }
 
@@ -898,8 +1060,10 @@ footer .x svg {
   flex-wrap: wrap;
   gap: 4px 10px;
   color: var(--blue);
+  font-family: var(--mono);
   font-size: 12px;
   line-height: 18px;
+  font-stretch: 87.5%;
   padding-left: 12px;
 }
 
@@ -913,8 +1077,10 @@ footer .x svg {
   background: none;
   color: var(--dim);
   padding: 0;
+  font-family: var(--label);
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -948,8 +1114,10 @@ footer .x svg {
   resize: vertical;
   border: 1px solid var(--rule);
   background: var(--bg);
-  padding: 8px 10px;
-  line-height: var(--lh);
+  padding: 8px 12px;
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 21px;
 }
 
 .composer textarea:focus {
@@ -970,8 +1138,10 @@ footer .x svg {
 
 .composer-panel .hint {
   color: var(--dim);
-  font-size: 12px;
+  font-family: var(--mono);
+  font-size: 11.5px;
   line-height: 18px;
+  font-stretch: 87.5%;
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -1011,10 +1181,12 @@ footer .x svg {
 
 .drawer h3 {
   margin: 0;
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
+  line-height: 1;
 }
 
 .drawer section {
@@ -1025,10 +1197,18 @@ footer .x svg {
 .drawer section h4 {
   margin: 0 0 6px;
   color: var(--dim);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: var(--label);
+  font-size: 12px;
+  letter-spacing: var(--track);
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.drawer section {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
+  font-stretch: 87.5%;
 }
 
 .trace {
@@ -1092,6 +1272,11 @@ footer .x svg {
   font-size: 12px;
 }
 
+.locked {
+  font-family: var(--body);
+  font-stretch: normal;
+}
+
 .doctrine span {
   color: var(--dim);
 }
@@ -1137,16 +1322,29 @@ footer .x svg {
 
 .night-overlay .sheet > header b {
   font-family: var(--display);
-  font-weight: 400;
-  font-size: 28px;
+  font-weight: 800;
+  font-size: 40px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.night-overlay .sheet > header .dim {
+  font-family: var(--label);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: var(--track);
+  text-transform: uppercase;
 }
 
 .night-overlay .list {
   padding: 12px 18px;
   display: grid;
   gap: 0;
+  font-family: var(--mono);
   font-size: 12.5px;
   line-height: 19px;
+  font-stretch: 87.5%;
   color: var(--ink-2);
 }
 
@@ -1185,15 +1383,19 @@ footer .x svg {
 
 .ending h2 {
   font-family: var(--display);
-  font-weight: 400;
-  font-size: 48px;
+  font-weight: 800;
+  font-size: 76px;
   margin: 0;
-  line-height: 1.05;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .ending .summary {
   color: var(--ink-2);
   max-width: 68ch;
+  font-size: 17px;
+  line-height: 26px;
 }
 
 .scores {
@@ -1229,13 +1431,17 @@ footer .x svg {
 
 .finding .k {
   color: var(--dim);
+  font-family: var(--label);
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--track);
   text-transform: uppercase;
 }
 
 .finding .v {
   color: var(--ink-2);
+  font-size: 14px;
+  line-height: 21px;
 }
 
 .finding .v q {
@@ -1274,15 +1480,19 @@ footer .x svg {
 
 .help h3 {
   margin: 12px 0 0;
-  font-size: 13.5px;
-  font-weight: 600;
+  font-family: var(--label);
+  font-size: 13px;
+  font-weight: 700;
   color: var(--ink);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .help code {
   color: var(--amber);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-stretch: 87.5%;
 }
 
 .help ul {

@@ -32,10 +32,11 @@ function Vector({ m }: { m: Measurements }) {
 function Say({ u, onWhy }: { u: Utterance; onWhy?: () => void }) {
   return (
     <div className="entry say">
-      <div className="text" data-who={OFFICERS[u.department].name}>
-        {u.text}
-        <span className="act">{ACT_LABEL[u.act]}</span>
+      <div className="who">
+        <b>{OFFICERS[u.department].name}</b>
+        <span className={`act ${u.act}`}>{ACT_LABEL[u.act]}</span>
       </div>
+      <div className="text">{u.text}</div>
       {u.notes.length > 0 && (
         <div className="notes">
           {u.notes.map((n, i) => (

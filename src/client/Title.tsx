@@ -34,7 +34,9 @@ export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHe
   return (
     <div className="title">
       <div>
-        <h2>A command game where the enemy is what people think you meant.</h2>
+        <h2>
+          A command game where the enemy is <em>what people think you meant.</em>
+        </h2>
       </div>
       <p className="lead">
         Vesper Station is failing. You have fourteen days, four officers and a text box. Write orders in your own words; a calibrated model measures what you meant, and each officer's doctrine decides what they do about it. Then read the trace and learn why Chen kept two trucks back.

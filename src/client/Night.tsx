@@ -61,10 +61,11 @@ export function NightSheet({ report, onDone }: { report: DayReport; onDone(): vo
         <div className="reports">
           {reports.slice(0, Math.max(0, shown - lines.length)).map((u) => (
             <div className="entry say" key={u.department}>
-              <div className="text" data-who={OFFICERS[u.department].name}>
-                {u.text}
-                <span className="act">{ACT_LABEL[u.act]}</span>
+              <div className="who">
+                <b>{OFFICERS[u.department].name}</b>
+                <span className={`act ${u.act}`}>{ACT_LABEL[u.act]}</span>
               </div>
+              <div className="text">{u.text}</div>
               {u.notes.length > 0 && (
                 <div className="notes">
                   {u.notes.slice(0, 5).map((n, i) => (
