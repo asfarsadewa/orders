@@ -20,10 +20,12 @@ export const PHYS = {
   heatTemp: 0,
   /** Heating demand is this fraction of nominal per degree below zero, from 0.3 to 1.3. */
   heatPerDegree: 1 / 15,
+  /** The generator never burns less than this fraction of its full-load fuel. */
+  idleBurn: 0.45,
   /** The battery can cover at most this much demand in a night. */
   reserveMaxDraw: 0.5,
   /** Cutting order when supply falls short; a priority sector is moved to the end. */
-  cutOrder: ["works", "core", "habitat", "infirmary"] as SectorId[],
+  cutOrder: ["core", "works", "habitat", "infirmary"] as SectorId[],
   /** Days of water a healthy pump adds per night at full power. */
   pumpYield: 1.3,
   waterCap: 6,
@@ -165,7 +167,7 @@ export function crewHours(w: World, d: Department): number {
   return Math.round(fit * 8 * (1 - 0.5 * c.fatigue));
 }
 
-/** Fuel that trucks may burn today: everything above what the night is owed. */
+/** Fuel that trucks may burn today: everything above what the night is owed at full load. */
 export function fuelForTrucks(w: World): number {
   const owed = FUEL.generatorNight * Math.min(1, w.power.generatorHealth) + (w.fuel.reservedForPumps ? FUEL.pumpsNight : 0);
   return Math.max(0, Math.floor(w.fuel.units - owed));
@@ -205,8 +207,12 @@ export function nightTick(w: World, rec: Recorder, ctx: NightContext): void {
   change(w, rec, "weather.kind", weather.kind, `Night: ${weather.kind}, ${weather.tempC} C.`);
   change(w, rec, "weather.tempC", weather.tempC, `Night: ${weather.kind}, ${weather.tempC} C.`);
 
-  // 1. Fuel for the night: generator and pumps, in the stated priority.
-  const genNeed = FUEL.generatorNight * Math.min(1, w.power.generatorHealth);
+  // 1. Fuel for the night: generator and pumps, in the stated priority. The
+  // generator burns in proportion to the load it will carry, with an idle floor.
+  const heat = heatingDemand(w, weather.tempC);
+  let demand = PHYS.baseLoad - (w.power.shedding ? PHYS.shedSaves : 0);
+  for (const s of Object.keys(heat) as SectorId[]) demand += heat[s] ?? 0;
+  const genNeed = r3(FUEL.generatorNight * clamp(Math.min(demand, generatorOutput(w)), PHYS.idleBurn, 1));
   const pumpsWant = !w.water.pipesFrozen && w.water.pumpHealth > 0.05 && (w.fuel.reservedForPumps || w.fuel.priority === "pumps") ? FUEL.pumpsNight : 0;
   let fuel = w.fuel.units;
   let genFuelled = false;
@@ -235,9 +241,6 @@ export function nightTick(w: World, rec: Recorder, ctx: NightContext): void {
   if (w.power.isolated > 0) change(w, rec, "power.isolated", w.power.isolated - 1, "One more night of isolation done.");
 
   // 2. Power balance: base load plus heating; battery bridges only if allowed; cut sectors in order.
-  const heat = heatingDemand(w, weather.tempC);
-  let demand = PHYS.baseLoad - (w.power.shedding ? PHYS.shedSaves : 0);
-  for (const s of Object.keys(heat) as SectorId[]) demand += heat[s] ?? 0;
   let supply = w.power.output;
   let reserveDraw = 0;
   if (supply < demand && w.power.reservePolicy === "bridge" && w.power.reserve > 0) {

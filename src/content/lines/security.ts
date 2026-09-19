@@ -22,7 +22,7 @@ export const SECURITY_LINES = [
     "You said whatever it takes. I will take you at your word.",
     "Commander, that will cost people. Say it again if you mean it.",
     "At any cost is a big phrase. I intend to use all of it.",
-    "If I go out there armed, I am not coming back quiet.",
+    ["If I go out there armed, I am not coming back quiet.", ["force"]],
   ]),
   ...lines(who, "confirm_priority", [
     "People first, then the gate. Understood.",

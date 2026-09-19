@@ -85,11 +85,11 @@ describe("the night", () => {
 
   it("fuel runs out: the generator starves and the pumps stop", () => {
     const w = initialWorld();
-    w.fuel.units = 3;
+    w.fuel.units = 2;
     w.fuel.reservedForPumps = true;
     night(w);
     expect(w.fuel.units).toBe(0);
-    // Three units is about half a night for the generator.
+    // Two units is well under half a night for the generator at this load.
     expect(w.power.output).toBeLessThan(0.4);
     expect(w.water.pumpsFuelled).toBe(false);
   });

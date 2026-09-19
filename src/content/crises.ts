@@ -208,10 +208,15 @@ export const CRISES: readonly CrisisTemplate[] = [
       change(w, rec, "water.contaminated", true, "The tanks are fouled: people are getting sick.");
       injure(w, rec, 5, "First cases of sickness from the water.");
     },
-    onNight: (w, rec, c) => {
-      if (c.neglect >= 3 && w.tonight.quarantine) change(w, rec, "water.contaminated", false, "Boiled water and quarantine: the sickness is contained.");
+    onNight: () => undefined,
+    resolved: (w, c) => {
+      if (!w.water.contaminated) return true;
+      if (w.tonight.quarantine && w.day - c.dayStarted >= 2) {
+        w.water.contaminated = false;
+        return true;
+      }
+      return false;
     },
-    resolved: (w) => !w.water.contaminated,
     describe: (w) => `Sector C, Works: the water is contaminated; ${w.tonight.quarantine ? "quarantine in force" : "sickness spreading"}.`,
     concerns: ["medical", "engineering"],
   }),

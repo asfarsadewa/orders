@@ -45,12 +45,26 @@ export function linesFor(who: Department, act: SpeechAct): Line[] {
   return ALL_LINES.filter((l) => l.who === who && l.act === act);
 }
 
-/** Picks a line deterministically from the seed and a label, avoiding the last one used where possible. */
-export function pickLine(seed: string, label: string, who: Department, act: SpeechAct, avoid?: string): Line {
+/**
+ * Picks a line deterministically from the seed and a label, avoiding the last
+ * one used where possible. With `tags`, lines about the same thing are
+ * preferred, and lines about something else are left out; untagged lines fit
+ * anything.
+ */
+export function pickLine(seed: string, label: string, who: Department, act: SpeechAct, avoid?: string, tags?: readonly string[]): Line {
   const pool = linesFor(who, act);
   if (!pool.length) throw new Error(`no lines for ${who}/${act}`);
   const rng = scoped(seed, "line", label, who, act);
-  const options = pool.length > 1 && avoid ? pool.filter((l) => l.id !== avoid) : pool;
+  let options = pool;
+  if (tags && tags.length) {
+    const matching = pool.filter((l) => l.tags?.some((t) => tags.includes(t)));
+    const neutral = pool.filter((l) => !l.tags);
+    options = matching.length ? matching : neutral.length ? neutral : pool;
+  } else {
+    const neutral = pool.filter((l) => !l.tags);
+    options = neutral.length ? neutral : pool;
+  }
+  if (options.length > 1 && avoid) options = options.filter((l) => l.id !== avoid);
   return options[rng.int(options.length)];
 }
 

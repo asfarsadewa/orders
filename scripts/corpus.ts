@@ -10,6 +10,7 @@ import type { NoulId, Objective, ScoreId, SectorId, Timeframe } from "../src/eng
 
 export interface Expect {
   objective?: Objective | Objective[];
+  owner?: "security" | "logistics" | "medical" | "engineering" | "none";
   sector?: SectorId | "none" | (SectorId | "none")[];
   timeframe?: Timeframe | Timeframe[];
   high?: NoulId[];
@@ -83,6 +84,7 @@ export const CORPUS: readonly CorpusEntry[] = [
   }),
   E("evac_b", "spec example", "Get Sector B evacuated before dark. Use whatever vehicles are available, but keep enough fuel for the water pumps tonight. Security should cover the evacuation instead of chasing whatever is outside.", {
     objective: "evacuate",
+    owner: "none",
     sector: "habitat",
     timeframe: "today",
     high: ["concerns_security", "concerns_logistics", "preserve_reserve", "deadline_present", "gives_clear_priority", "priority_people", "avoid_combat"],
@@ -99,6 +101,7 @@ export const CORPUS: readonly CorpusEntry[] = [
     scores: { urgency: [2.4, 3] },
   }),
   E("save_everyone", "underspecified absolute", "Save everyone.", {
+    owner: "none",
     high: ["priority_people", "underspecified", "absolute_language"],
     low: ["assigns_clear_owner", "deadline_present", "contains_conditional"],
     scores: { specificity: [0, 1], clarity: [0, 1.6] },
@@ -171,6 +174,7 @@ export const CORPUS: readonly CorpusEntry[] = [
   }),
   E("ilya_look", "bounded investigation", "Ilya, find out what's moving outside the fence. Do not engage, do not go past the road, and be back before dark.", {
     objective: "investigate",
+    owner: "security",
     sector: "perimeter",
     high: ["concerns_security", "avoid_combat", "deadline_present", "assigns_clear_owner"],
     low: ["permission_to_use_force", "concerns_medical", "concerns_engineering", "maintain_position"],
@@ -183,12 +187,14 @@ export const CORPUS: readonly CorpusEntry[] = [
     scores: { risk_tolerance: [2.2, 3], delegated_discretion: [2, 3] },
   }),
   E("chen_pumps_first", "answers clarification", "Chen, priority is the pumps. Fuel them first, then the trucks with what's left.", {
+    owner: "logistics",
     high: ["concerns_logistics", "gives_clear_priority", "priority_water", "assigns_clear_owner"],
     low: ["is_question", "contradictory", "concerns_medical"],
     answers: { 0: "high" },
   }),
   E("dig_out", "multi-department rescue", "Get the trapped people out of Habitat. Orlov shores up the roof, Ilya's squad digs, Vale has medics standing by at the entrance.", {
     objective: "rescue",
+    owner: "none",
     sector: "habitat",
     high: ["concerns_engineering", "concerns_security", "concerns_medical", "assigns_clear_owner", "priority_people"],
     low: ["is_question", "contradictory", "underspecified"],
@@ -211,6 +217,7 @@ export const CORPUS: readonly CorpusEntry[] = [
     low: ["is_question", "permission_to_use_force", "concerns_security"],
   }),
   E("vale_critical", "medicine conservation", "Vale, treat only the critical cases. We need the medicine to last two more weeks.", {
+    owner: "medical",
     high: ["concerns_medical", "priority_medicine", "assigns_clear_owner"],
     low: ["is_question", "concerns_security", "permission_to_use_reserve"],
     scores: { resource_flexibility: [0, 1.2] },
@@ -256,6 +263,7 @@ export const CORPUS: readonly CorpusEntry[] = [
     low: ["is_question", "permission_to_use_force", "avoid_combat"],
   }),
   E("pipes", "infrastructure absolute", "Orlov, whatever you do, do not let the pipes freeze. Keep Habitat heated even if it means running the generator hot.", {
+    owner: "engineering",
     // Read as heating for people, with the pipes as the reason; it also conflicts with the recent pumps-first order, which is right.
     high: ["concerns_engineering", "assigns_clear_owner", "priority_people", "absolute_language", "conflicts_with_recent_order"],
     low: ["is_question", "concerns_security", "avoid_casualties"],

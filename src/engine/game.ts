@@ -65,8 +65,9 @@ function stance(state: GameState, d: Department, m: Measurements, decision: Deci
     notes.push(`= ${absolute ? `absolute language ${m.nouls.absolute_language.toFixed(2)}` : `risk tolerance ${m.scores.risk_tolerance.score.toFixed(1)}/3`}; the chosen action carries risk ${(chosen?.risk ?? 0).toFixed(2)}`);
     return { act: "warn", notes };
   }
-  if (doc.riskAversion >= 0.6 && (m.nouls.permission_to_use_reserve >= THRESHOLDS.constraint || m.nouls.permission_to_sacrifice_equipment >= THRESHOLDS.constraint || m.scores.resource_flexibility.score >= 2.4)) {
-    notes.push(`= spends what the officer would keep: resource flexibility ${m.scores.resource_flexibility.score.toFixed(1)}/3`);
+  const spends = (chosen?.constraints?.preserve_reserve ?? 0) < 0 || (chosen?.constraints?.permission_to_use_reserve ?? 0) > 0 || (chosen?.priorities?.priority_fuel ?? 0) < 0 || (chosen?.priorities?.priority_medicine ?? 0) < 0 || (chosen?.priorities?.priority_infrastructure ?? 0) < 0;
+  if (doc.riskAversion >= 0.6 && spends && (m.nouls.permission_to_use_reserve >= THRESHOLDS.constraint || m.nouls.permission_to_sacrifice_equipment >= THRESHOLDS.constraint || m.scores.resource_flexibility.score >= 2.4)) {
+    notes.push(`= ${chosen?.label.toLowerCase()} spends what the officer would keep; resource flexibility ${m.scores.resource_flexibility.score.toFixed(1)}/3`);
     return { act: "warn", notes };
   }
   const violated = chosen?.constraints ? Object.entries(chosen.constraints).filter(([c, w]) => (w ?? 0) < 0 && m.nouls[c as keyof typeof m.nouls] >= THRESHOLDS.constraint) : [];
@@ -149,7 +150,7 @@ export function applyOrder(state: GameState, text: string, measurements: Measure
       utterances.push({ department: d, day: next.day, act, lineId: `${d}.clarify.${decision.clarify.reason}`, text: question, notes, orderId: id });
       continue;
     }
-    const line = pickLine(next.seed, id, d, act, lastLine(next, d));
+    const line = pickLine(next.seed, id, d, act, lastLine(next, d), ACTION_BY_ID.get(decision.action)?.tags);
     if (record.standingOrderId) notes.push(`= recorded as standing order ${record.standingOrderId}`);
     if (superseded.length) notes.push(`= supersedes ${superseded.join(", ")}`);
     utterances.push({ department: d, day: next.day, act, lineId: line.id, text: line.text, notes, orderId: id });
@@ -190,7 +191,7 @@ function reportUtterances(state: GameState, decisions: Decision[], crewCasualtie
     }
     for (const e of dec.effects.slice(0, 6)) notes.push(`= ${e.note}`);
     if (dec.basis === "initiative") notes.push("= unordered: acted on initiative");
-    const line = pickLine(state.seed, `report-${dec.day}`, d, act, lastLine(state, d));
+    const line = pickLine(state.seed, `report-${dec.day}`, d, act, lastLine(state, d), def?.tags);
     out.push({ department: d, day: dec.day, act, lineId: line.id, text: line.text, notes, orderId: dec.orders[dec.orders.length - 1] ?? null });
   }
   return out;

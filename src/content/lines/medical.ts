@@ -19,10 +19,10 @@ export const MEDICAL_LINES = [
     "Fine. I will treat who I am allowed to treat.",
   ]),
   ...lines(who, "warn", [
-    "If I treat everyone now, there is nothing left in a week.",
+    ["If I treat everyone now, there is nothing left in a week.", ["medicine"]],
     "There are people who will not survive that. I need you to know that first.",
-    "You are asking me to choose who waits. I will, but say it.",
-    "Medics in a burning building are patients in ten minutes.",
+    ["You are asking me to choose who waits. I will, but say it.", ["medicine"]],
+    ["Medics in a burning building are patients in ten minutes.", ["field"]],
   ]),
   ...lines(who, "confirm_priority", [
     "The wounded first. Good. I will hold you to it.",

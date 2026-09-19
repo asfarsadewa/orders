@@ -2,7 +2,7 @@
 // back to the engine's Measurements. Question ids are for code; the meaning is
 // in the instructions and criteria, which name state fields in backticks.
 //
-// One request asks everything: three Choices, forty Nouls, six Scores, plus two
+// One request asks everything: four Choices, forty Nouls, six Scores, plus two
 // Nouls per active standing order and one per pending clarification. The
 // engine consumes only what applies; the rest is speculative fan-out.
 
@@ -19,6 +19,7 @@ import {
   SECTORS,
   TIMEFRAMES,
   type ChoiceMeasure,
+  type Department,
   type Measurements,
   type NoulId,
   type Objective,
@@ -345,6 +346,17 @@ export function buildQuestions(state: JudgeState): Questions {
     instructions: "When `order` wants its main effect.",
     criteria: { ...TIMEFRAME_CRITERIA },
   };
+  q.owner = {
+    type: "choice",
+    instructions: "The one department `order` is addressed to, by an officer's name or by role, as described in `departments`. Other departments may be touched by the order without being its owner.",
+    criteria: {
+      security: "Addressed to Captain Ilya or the security squad",
+      logistics: "Addressed to Chen or the logistics crew",
+      medical: "Addressed to Dr Vale or the medical staff",
+      engineering: "Addressed to Chief Orlov or the engineering crew",
+      none: "Addressed to nobody in particular, to everyone, or to two or more officers equally",
+    },
+  };
   for (const n of NOULS) q[n.id] = { type: "noul", instructions: n.instructions, criteria: n.criteria ?? null };
   for (const id of SCORE_IDS) q[id] = { type: "score", instructions: SCORE_INSTRUCTIONS[id], criteria: [...SCORE_LEVELS[id]] };
   state.standing_orders.slice(0, MAX_STANDING).forEach((_, i) => {
@@ -369,7 +381,7 @@ export function buildQuestions(state: JudgeState): Questions {
   return q;
 }
 
-export const FIXED_QUESTION_COUNT = 3 + NOULS.length + SCORE_IDS.length;
+export const FIXED_QUESTION_COUNT = 4 + NOULS.length + SCORE_IDS.length;
 
 export function questionCount(state: JudgeState): number {
   return FIXED_QUESTION_COUNT + 2 * Math.min(MAX_STANDING, state.standing_orders.length) + Math.min(MAX_PENDING, state.pending_clarifications.length);
@@ -408,6 +420,7 @@ export function toMeasurements(answers: Answers, state: JudgeState): Measurement
     objective: choice<Objective>(answers.objective, "other"),
     sector: choice<SectorId | "none">(answers.sector, "none"),
     timeframe: choice<Timeframe>(answers.timeframe, "unstated"),
+    owner: choice<Department | "none">(answers.owner, "none"),
     nouls,
     scores,
     standing,
@@ -425,6 +438,7 @@ export function emptyMeasurements(): Measurements {
     objective: { choice: "other", confidence: 0, probabilities: { other: 1 } },
     sector: { choice: "none", confidence: 0, probabilities: { none: 1 } },
     timeframe: { choice: "unstated", confidence: 0, probabilities: { unstated: 1 } },
+    owner: { choice: "none", confidence: 0, probabilities: { none: 1 } },
     nouls,
     scores,
     standing: [],

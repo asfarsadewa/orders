@@ -153,6 +153,8 @@ export interface Measurements {
   objective: ChoiceMeasure<Objective>;
   sector: ChoiceMeasure<SectorId | "none">;
   timeframe: ChoiceMeasure<Timeframe>;
+  /** The one department the order is addressed to by name or role, or none. */
+  owner: ChoiceMeasure<Department | "none">;
   nouls: Record<NoulId, number>;
   scores: Record<ScoreId, ScoreMeasure>;
   standing: StandingOrderMeasure[];
@@ -357,6 +359,8 @@ export interface ActionSpec {
   initiativeBase: number;
   /** True for the routine and for request_clarification: never chosen by initiative alone. */
   passive?: boolean;
+  /** What the action is about, for choosing lines that fit: reserve, fuel, medicine, force, heat, machine, people. */
+  tags?: string[];
 }
 
 /** What an action asks for from the shared pool this day. */

@@ -50,6 +50,9 @@ export const W = {
   initiative: 1.2,
   /** Later orders on the same day weigh a little more. */
   laterOrder: 0.1,
+  /** When an order names another officer as its owner, this department's objective term is scaled by this. */
+  supportObjective: 0.35,
+  ownerGate: 0.6,
   /** Utility a crisis action needs to beat the routine when nobody ordered it. */
   initiativeFloor: 0.35,
   /** An officer asks instead of acting when their need to clarify crosses this. */
@@ -157,7 +160,9 @@ export function score(ctx: OfficerContext, a: ActionDef): Candidate {
     const m = o.record.measurements;
     const w = o.weight * (1 + W.laterOrder * i) * doc.obedience * tf.obedience;
     const om = objectiveMatch(m, a);
-    push(`objective (${o.record.id})`, W.objective * om * w, `objective ${m.objective.choice} ${f2(m.objective.probabilities[m.objective.choice] ?? 0)} × serves ${f2(om)} × obedience ${f2(doc.obedience)} × trust ${f2(tf.obedience)}`);
+    const ownerP = m.owner.choice === "none" ? 0 : (m.owner.probabilities[m.owner.choice] ?? 0);
+    const support = m.owner.choice !== "none" && m.owner.choice !== department && ownerP >= W.ownerGate ? W.supportObjective : 1;
+    push(`objective (${o.record.id})`, W.objective * om * w * support, `objective ${m.objective.choice} ${f2(m.objective.probabilities[m.objective.choice] ?? 0)} × serves ${f2(om)} × obedience ${f2(doc.obedience)} × trust ${f2(tf.obedience)}${support < 1 ? ` × support ${f2(support)} (addressed to ${m.owner.choice} ${f2(ownerP)})` : ""}`);
     const pm = priorityMatch(m, a, doc);
     push(`priorities (${o.record.id})`, W.priority * pm.value * w, pm.parts.join("; ") || "no stated priority this action serves");
     const cm = constraintMatch(m, a, doc);

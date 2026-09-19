@@ -17,7 +17,7 @@ export function crossed(m: Measurements): { id: string; p: number; gate: number 
 
 export function explainMeasurements(m: Measurements): string[] {
   const out: string[] = [];
-  out.push(`objective ${m.objective.choice} ${f2(m.objective.probabilities[m.objective.choice] ?? 0)} · sector ${m.sector.choice} ${f2(m.sector.probabilities[m.sector.choice] ?? 0)} · timeframe ${m.timeframe.choice}`);
+  out.push(`objective ${m.objective.choice} ${f2(m.objective.probabilities[m.objective.choice] ?? 0)} · owner ${m.owner.choice} ${f2(m.owner.probabilities[m.owner.choice] ?? 0)} · sector ${m.sector.choice} ${f2(m.sector.probabilities[m.sector.choice] ?? 0)} · timeframe ${m.timeframe.choice}`);
   out.push(SCORE_IDS.map((id) => `${id.replace(/_/g, " ")} ${f2(m.scores[id].score)}`).join(" · "));
   for (const c of crossed(m)) out.push(`${c.id.replace(/_/g, " ")} ${f2(c.p)} ≥ ${f2(c.gate)}`);
   m.standing.forEach((s, i) => out.push(`standing ${i + 1}: conflict ${f2(s.conflict)} · override ${f2(s.override)}`));

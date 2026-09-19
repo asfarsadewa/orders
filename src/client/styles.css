@@ -653,6 +653,22 @@ footer .x svg {
   cursor: pointer;
   min-height: 108px;
   position: relative;
+  min-width: 0;
+}
+
+.officer > span {
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .officers {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .officer {
+    border-right: 0;
+    border-bottom: 1px solid var(--rule-2);
+  }
 }
 
 .officer:last-child {
@@ -678,8 +694,9 @@ footer .x svg {
 .officer .who {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: 4px 8px;
   align-items: baseline;
+  flex-wrap: wrap;
 }
 
 .officer .who b {

@@ -10,10 +10,15 @@ export interface Line {
   who: Department;
   act: SpeechAct;
   text: string;
+  /** What the line is about; a line with tags is preferred when the action shares one, and avoided when it shares none. */
+  tags?: string[];
 }
 
-export function lines(who: Department, act: SpeechAct, texts: readonly string[]): Line[] {
-  return texts.map((text, i) => ({ id: `${who}.${act}.${i + 1}`, who, act, text }));
+export function lines(who: Department, act: SpeechAct, texts: readonly (string | [string, string[]])[]): Line[] {
+  return texts.map((t, i) => {
+    const [text, tags] = typeof t === "string" ? [t, undefined] : t;
+    return { id: `${who}.${act}.${i + 1}`, who, act, text, ...(tags ? { tags } : {}) };
+  });
 }
 
 export type ClarifyQuestions = Record<ClarifyReason, string>;

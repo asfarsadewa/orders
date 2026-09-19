@@ -20,9 +20,10 @@ export const LOGISTICS_LINES = [
   ]),
   ...lines(who, "warn", [
     "If I take all of it, there is no all of it tomorrow.",
-    "That leaves nothing for the pumps tonight. Say so if that is intended.",
-    "Every trip is fuel we do not get back. I will count them for you.",
-    "Whatever it takes, in my department, means the last drum.",
+    ["That leaves nothing for the pumps tonight. Say so if that is intended.", ["fuel", "reserve"]],
+    ["Every trip is fuel we do not get back. I will count them for you.", ["fuel", "trucks"]],
+    ["Whatever it takes, in my department, means the last drum.", ["fuel"]],
+    ["Feed people from the reserve and the reserve is gone by the week's end.", ["food", "reserve"]],
   ]),
   ...lines(who, "confirm_priority", [
     "Pumps before trucks. Understood. That is all I needed.",

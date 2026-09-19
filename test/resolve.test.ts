@@ -105,6 +105,29 @@ describe("officer divergence", () => {
   });
 });
 
+describe("ownership", () => {
+  it("an order addressed to Orlov that touches fuel makes Chen support, not lead", () => {
+    const thaw = vector({
+      objective: "repair",
+      sector: "works",
+      owner: "engineering",
+      scope: ["engineering", "logistics"],
+      nouls: { priority_water: 0.85, assigns_clear_owner: 0.95, permission_to_use_reserve: 0.7 },
+      scores: { urgency: 2.5, clarity: 2.2, specificity: 2.5, resource_flexibility: 2 },
+    });
+    const s = crisisState();
+    s.world.water.pipesFrozen = true;
+    const s2 = applyOrder(s, "Orlov, thaw the pipes today. Use fuel for the heaters if you must.", thaw);
+    const c = chosen(s2);
+    // Both are repairs to the water system; the vector cannot tell pipes from pumps, and the pumps are at 40%.
+    expect(["eng_thaw_pipes", "eng_repair_pumps"]).toContain(c.engineering.action);
+    expect(c.logistics.action).not.toBe("log_repair_truck");
+    const chen = decideAll(s2, s2.world).find((x) => x.decision.department === "logistics")!.decision;
+    const truck = chen.candidates.find((x) => x.action === "log_repair_truck")!;
+    expect(truck.terms.find((t) => t.name.startsWith("objective"))?.note).toContain("support 0.35");
+  });
+});
+
 describe("clarification", () => {
   it("a contradictory order makes the literal officer ask", () => {
     const s = applyOrder(crisisState(), "Evacuate the infirmary but do not move the patients.", CONTRADICTION);

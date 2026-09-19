@@ -19,10 +19,11 @@ export const ENGINEERING_LINES = [
     "It is your colony. I will bend the system to it.",
   ]),
   ...lines(who, "warn", [
-    "Run it hot tonight and it is scrap by spring.",
-    "If I spend the battery now, the next bad night is dark.",
-    "Every watt to the ward means no watt to the pumps. Say if that is meant.",
+    ["Run it hot tonight and it is scrap by spring.", ["overrun"]],
+    ["If I spend the battery now, the next bad night is dark.", ["reserve"]],
+    ["Every watt to the ward means no watt to the pumps. Say if that is meant.", ["divert"]],
     "A temporary sacrifice in my department has a way of becoming permanent.",
+    ["The fire will take the hall or the crew. I would rather it took the hall.", ["fire"]],
   ]),
   ...lines(who, "confirm_priority", [
     "The pumps first. Good. That is a system I can plan around.",

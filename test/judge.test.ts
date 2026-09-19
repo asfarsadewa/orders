@@ -15,6 +15,7 @@ describe("the question set", () => {
     expect(state.pending_clarifications).toHaveLength(1);
     const q = buildQuestions(state);
     expect(Object.keys(q)).toHaveLength(FIXED_QUESTION_COUNT + 2 + 1);
+    expect(q.owner?.type).toBe("choice");
     expect(questionCount(state)).toBe(Object.keys(q).length);
     expect(q.so_0_conflict).toBeDefined();
     expect(q.answers_0).toBeDefined();

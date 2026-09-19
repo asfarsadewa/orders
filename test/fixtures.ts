@@ -9,6 +9,8 @@ export interface VectorSpec {
   objectiveP?: number;
   sector?: SectorId | "none";
   timeframe?: Timeframe;
+  /** The department the order names, at 0.9. */
+  owner?: "security" | "logistics" | "medical" | "engineering";
   /** Nouls to set; unset ones stay 0.05. */
   nouls?: Partial<Record<NoulId, number>>;
   scores?: Partial<Record<ScoreId, number>>;
@@ -31,6 +33,7 @@ export function vector(spec: VectorSpec): Measurements {
   }
   if (spec.sector) m.sector = { choice: spec.sector, confidence: 0.9, probabilities: { [spec.sector]: 0.9 } };
   if (spec.timeframe) m.timeframe = { choice: spec.timeframe, confidence: 0.9, probabilities: { [spec.timeframe]: 0.9 } };
+  if (spec.owner) m.owner = { choice: spec.owner, confidence: 0.9, probabilities: { [spec.owner]: 0.9, none: 0.1 } };
   for (const d of spec.scope ?? []) m.nouls[`concerns_${d}`] = 0.9;
   for (const [k, v] of Object.entries(spec.nouls ?? {})) m.nouls[k as NoulId] = v as number;
   for (const [k, v] of Object.entries(spec.scores ?? {})) m.scores[k as ScoreId] = { score: v as number, confidence: 0.7, probabilities: { [String(Math.round(v as number))]: 1 } };
@@ -72,6 +75,7 @@ export const SAVE_EVERYONE = vector({
 export const ILYA_WHATEVER = vector({
   objective: "defend",
   sector: "perimeter",
+  owner: "security",
   scope: ["security"],
   nouls: { priority_security: 0.85, permission_to_use_force: 0.9, absolute_language: 0.9, allows_discretion: 0.8, assigns_clear_owner: 0.95 },
   scores: { urgency: 2.3, risk_tolerance: 2.8, resource_flexibility: 2, clarity: 2.2, delegated_discretion: 2.6 },
@@ -82,6 +86,7 @@ export const ILYA_LOOK = vector({
   objective: "investigate",
   sector: "perimeter",
   timeframe: "today",
+  owner: "security",
   scope: ["security"],
   nouls: { avoid_combat: 0.9, deadline_present: 0.9, assigns_clear_owner: 0.95 },
   scores: { urgency: 2, risk_tolerance: 1, clarity: 2.8, specificity: 2.8, delegated_discretion: 0.8 },
@@ -91,6 +96,7 @@ export const ILYA_LOOK = vector({
 export const CHEN_PUMPS_FIRST = vector({
   objective: "conserve",
   sector: "works",
+  owner: "logistics",
   scope: ["logistics"],
   nouls: { priority_water: 0.85, priority_fuel: 0.6, gives_clear_priority: 0.9, assigns_clear_owner: 0.95 },
   scores: { urgency: 2, clarity: 2.8, specificity: 2.6 },
@@ -140,6 +146,7 @@ export const DIG_OUT = vector({
 export const VALE_CRITICAL = vector({
   objective: "conserve",
   sector: "infirmary",
+  owner: "medical",
   scope: ["medical"],
   nouls: { priority_medicine: 0.9, assigns_clear_owner: 0.95, resource_cap_present: 0.7 },
   scores: { urgency: 1.5, resource_flexibility: 0.5, clarity: 2.7, specificity: 2.5 },

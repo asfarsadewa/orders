@@ -58,6 +58,7 @@ function grade(entry: CorpusEntry, m: Measurements): Check[] {
     out.push({ question: q, want: list.join("|"), got: `${got} (p ${f2(pWant)} for wanted)`, pass: list.includes(got) });
   };
   oneOf(e.objective, m.objective.choice, m.objective.probabilities, "objective");
+  oneOf(e.owner, m.owner.choice, m.owner.probabilities, "owner");
   oneOf(e.sector, m.sector.choice, m.sector.probabilities, "sector");
   oneOf(e.timeframe, m.timeframe.choice, m.timeframe.probabilities, "timeframe");
   for (const id of e.high ?? []) {
@@ -224,7 +225,7 @@ async function main(): Promise<void> {
     lines.push("");
     lines.push(`> ${r.entry.text}`);
     lines.push("");
-    lines.push(`objective ${m.objective.choice} ${f2(m.objective.probabilities[m.objective.choice] ?? 0)} · sector ${m.sector.choice} ${f2(m.sector.probabilities[m.sector.choice] ?? 0)} · timeframe ${m.timeframe.choice} ${f2(m.timeframe.probabilities[m.timeframe.choice] ?? 0)}`);
+    lines.push(`objective ${m.objective.choice} ${f2(m.objective.probabilities[m.objective.choice] ?? 0)} · owner ${m.owner.choice} ${f2(m.owner.probabilities[m.owner.choice] ?? 0)} · sector ${m.sector.choice} ${f2(m.sector.probabilities[m.sector.choice] ?? 0)} · timeframe ${m.timeframe.choice} ${f2(m.timeframe.probabilities[m.timeframe.choice] ?? 0)}`);
     lines.push("");
     lines.push(SCORE_IDS.map((id) => `${id} ${f2(m.scores[id].score)}`).join(" · "));
     lines.push("");

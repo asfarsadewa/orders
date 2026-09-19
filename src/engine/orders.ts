@@ -10,11 +10,18 @@ export function gate(p: number, threshold: number): number {
   return p >= threshold ? (p - threshold) / (1 - threshold) : 0;
 }
 
-/** Departments whose scope Noul crossed; when none did, the objective implies one. */
+/**
+ * Departments whose scope Noul crossed; when none did, the objective implies
+ * one; when that is empty too, the departments the order touches most, and
+ * failing that everyone. An order to the colony is never an order to nobody.
+ */
 export function scopeOf(m: Measurements): Department[] {
   const out = DEPARTMENTS.filter((d) => m.nouls[`concerns_${d}` as const] >= THRESHOLDS.scope);
   if (out.length) return [...out];
-  return impliedScope(m.objective.choice);
+  const implied = impliedScope(m.objective.choice);
+  if (implied.length) return implied;
+  const touched = DEPARTMENTS.filter((d) => m.nouls[`concerns_${d}` as const] >= THRESHOLDS.scope * 0.6);
+  return touched.length ? [...touched] : [...DEPARTMENTS];
 }
 
 const IMPLIED: Record<Objective, Department[]> = {
