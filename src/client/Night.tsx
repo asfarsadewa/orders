@@ -32,7 +32,7 @@ export function NightSheet({ report, onDone }: { report: DayReport; onDone(): vo
   }, [shown, lines.length, reports]);
   const done = shown >= total;
   return (
-    <div className="night" role="dialog" aria-label={`Night ${report.day}`}>
+    <div className="night-overlay" role="dialog" aria-label={`Night ${report.day}`}>
       <div className="sheet">
         <header>
           <b>Night {report.day}</b>

@@ -1091,7 +1091,7 @@ footer .x svg {
 
 /* night overlay */
 
-.night {
+.night-overlay {
   position: fixed;
   inset: 0;
   background: rgba(8, 9, 10, 0.94);
@@ -1101,7 +1101,7 @@ footer .x svg {
   padding: 24px;
 }
 
-.night .sheet {
+.night-overlay .sheet {
   width: min(760px, 100%);
   max-height: 90vh;
   overflow-y: auto;
@@ -1110,7 +1110,7 @@ footer .x svg {
   padding: 0 0 16px;
 }
 
-.night .sheet > header {
+.night-overlay .sheet > header {
   padding: 14px 18px;
   border-bottom: 1px solid var(--rule);
   display: flex;
@@ -1118,13 +1118,13 @@ footer .x svg {
   align-items: baseline;
 }
 
-.night .sheet > header b {
+.night-overlay .sheet > header b {
   font-family: var(--display);
   font-weight: 400;
   font-size: 28px;
 }
 
-.night .list {
+.night-overlay .list {
   padding: 12px 18px;
   display: grid;
   gap: 0;
@@ -1133,25 +1133,25 @@ footer .x svg {
   color: var(--ink-2);
 }
 
-.night .list .bad {
+.night-overlay .list .bad {
   color: var(--red);
 }
 
-.night .list .good {
+.night-overlay .list .good {
   color: var(--green);
 }
 
-.night .list .quiet {
+.night-overlay .list .quiet {
   color: var(--dim);
 }
 
-.night .reports {
+.night-overlay .reports {
   padding: 4px 18px 8px;
   display: grid;
   gap: 8px;
 }
 
-.night .actions {
+.night-overlay .actions {
   padding: 8px 18px 0;
   display: flex;
   justify-content: flex-end;
