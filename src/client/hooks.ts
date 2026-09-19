@@ -46,7 +46,10 @@ export interface Run {
   /** The day report shown in the night overlay, until dismissed. */
   night: number | null;
   start(mode: Mode, turnstileToken: string, seed?: string): Promise<void>;
+  /** Replays the saved run. On failure the save is kept and `error` says so (D37). */
   resume(): boolean;
+  /** Deletes the saved run on the player's explicit word. */
+  discardSave(): void;
   send(text: string): Promise<void>;
   end(): void;
   dismissNight(): void;
@@ -90,11 +93,17 @@ export function useRun(): Run {
       const s = replay(save.events);
       sessionRef.current = save;
       setState(s);
+      setError(null);
       return true;
     } catch {
-      store(null);
+      setError("The saved run did not load. The save is kept. Discard it to start a new run.");
       return false;
     }
+  }, []);
+
+  const discardSave = useCallback(() => {
+    store(null);
+    setError(null);
   }, []);
 
   const send = useCallback(
@@ -140,7 +149,7 @@ export function useRun(): Run {
     if (state?.ending) store(null);
   }, [state?.ending]);
 
-  return useMemo(() => ({ state, busy, error, night, start, resume, send, end, dismissNight, abandon }), [state, busy, error, night, start, resume, send, end, dismissNight, abandon]);
+  return useMemo(() => ({ state, busy, error, night, start, resume, discardSave, send, end, dismissNight, abandon }), [state, busy, error, night, start, resume, discardSave, send, end, dismissNight, abandon]);
 }
 
 /** Subscribes to the audio manager's settings. */

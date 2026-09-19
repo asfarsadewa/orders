@@ -382,8 +382,10 @@ export interface Allocation {
   requests: ResourceRequest[];
   /** Fraction of each request granted, keyed by resource. */
   granted: Partial<Record<ResourceKey, number>>;
-  /** Overall fraction of the action carried out, min over granted. */
+  /** Overall fraction of the action carried out: the weakest grant, or 0 when that is below the action's minimum effort (D36). */
   fraction: number;
+  /** The weakest grant before the minimum effort was applied, kept for the explanation. */
+  supported?: number;
 }
 
 // ---------------------------------------------------------------------------

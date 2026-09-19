@@ -46,4 +46,4 @@ Construction order follows the spec's section 52: retire uncertainty in dependen
 ## Stage 14: Engine contracts from the review. Done.
 
 - A second agent's review found five handoff failures: rejected messages in scoring, standing orders matched by position, an allocator that reserved for actions that could not run, unconditional effects at zero allocation, and crisis attendance by department. Regressions in `test/review-regressions.test.ts`; decisions D30 to D34.
-- The order representation gained a `target` Choice (D35), calibrated 373/373. Open: quantities in caps, fallback binding, per-clause owners.
+- The order representation gained a `target` Choice (D35), calibrated 373/373. The follow-up review moved the minimum effort into allocation (D36) and made old recordings replay with a non-destructive resume (D37); regressions in `test/followup-regressions.test.ts`. Open: quantities in caps, fallback binding, per-clause owners.

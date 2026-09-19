@@ -410,9 +410,10 @@ export function allocate(state: GameState, world: World, decided: Decided[]): { 
       const g = r.key === "vehicles" ? Math.min(1, Math.floor(Math.min(avail, r.amount) + 1e-9) / r.amount) : Math.min(1, avail / r.amount);
       return { r, avail, g };
     });
-    // 2. The action runs at the weakest resource's fraction.
-    const fraction = support.reduce((f, s) => Math.min(f, s.g), 1);
-    // 3. Take only what that fraction needs. Any part of a trip needs a whole truck.
+    // 2. The action runs at the weakest resource's fraction, and not at all below its minimum effort (D36).
+    const supported = support.reduce((f, s) => Math.min(f, s.g), 1);
+    const fraction = supported > 0 && supported >= (def.minEffort ?? 0) ? supported : 0;
+    // 3. Take only what that fraction needs. Any part of a trip needs a whole truck. A rejected action takes nothing.
     for (const { r, avail, g } of support) {
       const used = fraction <= 0 ? 0 : r.key === "vehicles" ? Math.ceil(r.amount * fraction - 1e-9) : Math.round(r.amount * fraction * 1000) / 1000;
       if (r.key === "crewHours") hoursPool[r.department ?? d] = Math.max(0, avail - used);
@@ -420,7 +421,7 @@ export function allocate(state: GameState, world: World, decided: Decided[]): { 
       granted[r.key] = g;
       rows.push({ department: d, action: def.id, key: r.key, requested: r.amount, granted: g, available: avail, used });
     }
-    perDepartment[d] = { requests, granted, fraction: Math.round(fraction * 1000) / 1000 };
+    perDepartment[d] = { requests, granted, fraction: Math.round(fraction * 1000) / 1000, supported: Math.round(supported * 1000) / 1000 };
   }
   return {
     allocations: { rows, ruledBy: anyPrecedence ? "the priorities stated in today's orders, then initiative" : "officer initiative. No order stated a priority" },

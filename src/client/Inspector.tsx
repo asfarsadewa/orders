@@ -75,6 +75,7 @@ function DecisionTrace({ d }: { d: Decision }) {
             </span>
           ))}
           <span className="dim">· fraction {f2(d.allocation.fraction)}</span>
+          {d.allocation.supported !== undefined && d.allocation.supported !== d.allocation.fraction && <span className="dim"> · the pool supported {f2(d.allocation.supported)}, below the minimum effort</span>}
         </div>
       )}
       <div style={{ marginTop: 8 }}>

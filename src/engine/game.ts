@@ -7,6 +7,7 @@ import { CLARIFY_QUESTION, pickLine } from "../content/lines";
 import { OFFICERS } from "../content/officers";
 import { ORDERS_PER_DAY, initialWorld } from "../content/scenario";
 import { evaluateEnding } from "./endings";
+import { normalizeMeasurements } from "./measurements";
 import { activeStanding, addressesSystem, applyOverrides, decayPrecedent, emptyPrecedent, isQuestion, isStandingOrder, learnPrecedent, makeStandingOrder, scopeOf, standingConflicts } from "./orders";
 import { decideAll } from "./resolve";
 import { THRESHOLDS } from "./thresholds";
@@ -87,8 +88,10 @@ function stance(state: GameState, d: Department, m: Measurements, decision: Deci
 }
 
 /** Applies a measured order: ledger, standing orders, precedent, clarification answers, provisional stances. */
-export function applyOrder(state: GameState, text: string, measurements: Measurements): GameState {
+export function applyOrder(state: GameState, text: string, measured: Measurements): GameState {
   if (!canOrder(state)) return state;
+  // A recording from before a question was added lacks its measure; read it as neutral (D37).
+  const measurements = normalizeMeasurements(measured);
   const next: GameState = structuredClone(state);
   const id = `O-${next.day}-${next.today.length + 1}`;
   const scope = scopeOf(measurements);
@@ -191,7 +194,7 @@ function reportUtterances(state: GameState, decisions: Decision[], crewCasualtie
       const short = dec.allocation.requests.filter((r) => (dec.allocation!.granted[r.key] ?? 1) < 0.999).map((r) => `${r.key} ${Math.round((dec.allocation!.granted[r.key] ?? 0) * 100)}%`);
       if (short.length) notes.push(`= granted ${short.join(", ")}`);
     }
-    if (dec.executed === false) notes.push(`= Nothing was done. The pool met ${Math.round(fraction * 100)}% of the request${def?.minEffort ? `. The action needs ${Math.round(def.minEffort * 100)}%` : ""}.`);
+    if (dec.executed === false) notes.push(`= Nothing was done. The pool met ${Math.round((dec.allocation?.supported ?? fraction) * 100)}% of the request${def?.minEffort ? `. The action needs ${Math.round(def.minEffort * 100)}%` : ""}.`);
     for (const e of dec.effects.slice(0, 6)) notes.push(`= ${e.note}`);
     if (dec.basis === "initiative") notes.push("= No order. The officer acted on initiative.");
     const line = pickLine(state.seed, `report-${dec.day}`, d, act, lastLine(state, d), def?.tags);

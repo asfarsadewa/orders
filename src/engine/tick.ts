@@ -71,8 +71,9 @@ export function executeDay(state: GameState): DayOutcome {
       granted: alloc.granted,
     };
     // The execution contract (D33): an action with a request runs only when the pool met enough of it.
+    // Allocation already applied the action's minimum effort (D36), so the fraction is 0 or enough.
     const asks = def.requests(world).some((r) => r.amount > 0);
-    const executed = !asks || (alloc.fraction > 0 && alloc.fraction >= (def.minEffort ?? 0));
+    const executed = !asks || alloc.fraction > 0;
     if (executed) def.apply(world, rec, alloc.fraction, ctx);
     x.decision.allocation = alloc;
     x.decision.executed = executed;

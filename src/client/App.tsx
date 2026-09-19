@@ -35,6 +35,7 @@ export function App() {
   const [inspect, setInspect] = useState<InspectorTarget | null>(null);
   const [sector, setSector] = useState<SectorId | null>(null);
   const [canResume, setCanResume] = useState(false);
+  const [resumeFailed, setResumeFailed] = useState(false);
   const settings = useAudioSettings();
 
   useEffect(() => {
@@ -86,6 +87,13 @@ export function App() {
   const resume = () => {
     audio.unlock();
     if (run.resume()) setView("run");
+    else setResumeFailed(true);
+  };
+
+  const discard = () => {
+    run.discardSave();
+    setCanResume(false);
+    setResumeFailed(false);
   };
 
   const onWhy = (day: number, department: Department) => setInspect({ day, department });
@@ -159,7 +167,7 @@ export function App() {
       <main>
         {view === "help" && <Help onClose={() => setView(state ? "run" : "title")} />}
         {view === "title" && (
-          <Title siteKey={config?.siteKey ?? null} busy={run.busy} error={run.error ?? configError} canResume={canResume} onStart={startRun} onResume={resume} onHelp={() => setView("help")} />
+          <Title siteKey={config?.siteKey ?? null} busy={run.busy} error={run.error ?? configError} canResume={canResume} resumeFailed={resumeFailed} onStart={startRun} onResume={resume} onDiscard={discard} onHelp={() => setView("help")} />
         )}
         {view === "replay" && state && <Replay state={state} onBack={() => setView("run")} />}
         {showRun && state.ending && (

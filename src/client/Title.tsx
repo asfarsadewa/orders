@@ -11,7 +11,7 @@ const MODES: { id: Mode; name: string; blurb: string }[] = [
   { id: "iron", name: "Iron Command", blurb: "You see only the officers' words and the results. The trace opens when the run ends." },
 ];
 
-export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHelp }: { siteKey: string | null; busy: boolean; error: string | null; canResume: boolean; onStart(mode: Mode, token: string, seed?: string): void; onResume(): void; onHelp(): void }) {
+export function Title({ siteKey, busy, error, canResume, resumeFailed, onStart, onResume, onDiscard, onHelp }: { siteKey: string | null; busy: boolean; error: string | null; canResume: boolean; resumeFailed: boolean; onStart(mode: Mode, token: string, seed?: string): void; onResume(): void; onDiscard(): void; onHelp(): void }) {
   const [mode, setMode] = useState<Mode>("commander");
   const [seed, setSeed] = useState("");
   const slot = useRef<HTMLDivElement>(null);
@@ -70,9 +70,14 @@ export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHe
           <button className="primary" disabled={busy || waiting || turnstile.state === "error" || !siteKey} onClick={start}>
             {waiting || busy ? "Starting…" : "Take command"}
           </button>
-          {canResume && (
+          {canResume && !resumeFailed && (
             <button className="ctl" onClick={onResume}>
               Resume the saved run
+            </button>
+          )}
+          {canResume && resumeFailed && (
+            <button className="ctl ghost" onClick={onDiscard}>
+              Discard the saved run
             </button>
           )}
           <button className="ctl ghost" onClick={onHelp}>
