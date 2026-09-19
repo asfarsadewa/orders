@@ -79,9 +79,10 @@ export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHe
             how it works
           </button>
         </div>
+        <div className="note dim">The seed sets the weather, the contact outside and the crisis draws. Leave it blank for a random seed. The same seed with the same orders gives the same run.</div>
         <div ref={slot} className="turnstile-slot" />
         {(error || localError || turnstile.state === "error") && <div className="red">{error ?? localError ?? "Verification did not load. Reload the page."}</div>}
-        <div className="dim" style={{ fontSize: 12, lineHeight: "18px" }}>
+        <div className="note dim">
           You complete one verification for each run. The server holds the model key and measures your orders. The server logs the request size and time. The server does not log the order text. The game runs in this tab. The save stays in this tab. There is no account.
         </div>
       </div>

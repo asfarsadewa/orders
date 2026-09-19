@@ -429,6 +429,15 @@ footer .x svg {
   background: var(--panel);
 }
 
+.title .note {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.title .row + .note {
+  margin-top: -6px;
+}
+
 .title .modes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
