@@ -1,0 +1,108 @@
+{
+ "sfx": {
+  "send": {
+   "file": "/audio/sfx/send.mp3",
+   "seconds": 0.5,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A single crisp mechanical teletype key strike followed by a short paper advance click. Close, dry, no music."
+  },
+  "ack": {
+   "file": "/audio/sfx/ack.mp3",
+   "seconds": 0.6,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A short two-tone radio acknowledgement beep, clean and quiet, like a handheld transceiver confirming receipt. No music, no voice."
+  },
+  "clarify": {
+   "file": "/audio/sfx/clarify.mp3",
+   "seconds": 1,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A brief burst of soft radio static that resolves into one gentle rising query tone. Quiet, close, no music, no voice."
+  },
+  "warn": {
+   "file": "/audio/sfx/warn.mp3",
+   "seconds": 0.8,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A single low muted alert tone, one pulse, like a console warning in a dark control room. No music, no reverb, no voice."
+  },
+  "execute": {
+   "file": "/audio/sfx/execute.mp3",
+   "seconds": 1.58,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A heavy metal switch thrown with a solid mechanical clunk, then a low electrical hum settling for one second. Industrial, close, no music."
+  },
+  "alarm": {
+   "file": "/audio/sfx/alarm.mp3",
+   "seconds": 1.6,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A colony alarm klaxon, two short low honks heard through concrete walls, muffled and distant. No music, no voice."
+  },
+  "loss": {
+   "file": "/audio/sfx/loss.mp3",
+   "seconds": 2.2,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A single low sustained electronic tone like a heart monitor going flat, fading away over two seconds. Sombre, no music."
+  },
+  "relief": {
+   "file": "/audio/sfx/relief.mp3",
+   "seconds": 1.8,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A soft warm chord on a small analogue synthesizer, held briefly and released. Quiet hope, no melody, no percussion."
+  },
+  "dawn": {
+   "file": "/audio/sfx/dawn.mp3",
+   "seconds": 3,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "Cold wind dying down at dawn on an open snowy plateau, one distant metallic creak, then near silence. Outdoor ambience, no music, no voice."
+  },
+  "click": {
+   "file": "/audio/sfx/click.mp3",
+   "seconds": 0.14,
+   "loop": false,
+   "gainDb": -4,
+   "prompt": "One very short soft click of a fingertip on a plastic console key. Tiny, dry, no music."
+  },
+  "ending-good": {
+   "file": "/audio/sfx/ending-good.mp3",
+   "seconds": 3.5,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A slow warm swell of a low synthesizer pad with a faint high shimmer, rising and settling over three seconds. Hopeful, no melody, no percussion, no voice."
+  },
+  "ending-bad": {
+   "file": "/audio/sfx/ending-bad.mp3",
+   "seconds": 3.5,
+   "loop": false,
+   "gainDb": 0,
+   "prompt": "A deep dark drone with cold wind, descending slowly and dying away over three seconds. Bleak, no melody, no percussion, no voice."
+  }
+ },
+ "music": {
+  "title": {
+   "file": "/audio/music/title.mp3",
+   "seconds": 170.99,
+   "prompt": "Main theme for a cold, serious command game about a failing frontier colony in the snow: slow and spacious, a low analogue synth drone, sparse piano notes in a minor key, a faint distant metallic pulse like a generator, restrained, one memorable slow melody stated twice, modest dynamics, ends quietly. Instrumental only, no vocals, no lyrics, no spoken words.",
+   "source": "title-2.mp3"
+  },
+  "day": {
+   "file": "/audio/music/day.mp3",
+   "seconds": 175.74,
+   "prompt": "Tense, quiet underscore for a command post during a long day: soft analogue synth pads, a slow steady ticking pulse, sparse low piano, cold and patient, sits under reading and typing without demanding attention, no big build, no drum fills, gentle enough to loop. Instrumental only, no vocals, no lyrics, no spoken words.",
+   "source": "day-1.mp3"
+  },
+  "night": {
+   "file": "/audio/music/night.mp3",
+   "seconds": 171.36,
+   "prompt": "Dark ambient nocturne for a colony at night on a snowy plateau: wind textures, a very low bowed drone, distant creaking metal, an occasional lonely held note on a cello or a synth, slow and cold, very sparse, no percussion, seamless mood. Instrumental only, no vocals, no lyrics, no spoken words.",
+   "source": "night-2.mp3"
+  }
+ }
+}

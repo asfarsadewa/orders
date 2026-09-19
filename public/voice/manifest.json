@@ -1,0 +1,926 @@
+{
+ "model": "gemini-3.1-flash-tts-preview",
+ "version": 1,
+ "clips": {
+  "security.acknowledge.2": {
+   "seconds": 2.04,
+   "bytes": 8685,
+   "hash": "3d22a5bd3801"
+  },
+  "security.acknowledge.1": {
+   "seconds": 1.44,
+   "bytes": 6189,
+   "hash": "770d4c2c101c"
+  },
+  "security.acknowledge.4": {
+   "seconds": 1.68,
+   "bytes": 7245,
+   "hash": "66cfd7d2b0a5"
+  },
+  "security.acknowledge.5": {
+   "seconds": 1.85,
+   "bytes": 7821,
+   "hash": "e0a902ca2393"
+  },
+  "security.acknowledge.3": {
+   "seconds": 1.74,
+   "bytes": 7437,
+   "hash": "4794ffdb86c3"
+  },
+  "security.object.1": {
+   "seconds": 2.87,
+   "bytes": 11949,
+   "hash": "72999eefa2c2"
+  },
+  "security.object.3": {
+   "seconds": 3.43,
+   "bytes": 14157,
+   "hash": "5304d354c212"
+  },
+  "security.object.4": {
+   "seconds": 3.32,
+   "bytes": 13773,
+   "hash": "5a1aafd767ec"
+  },
+  "security.object.2": {
+   "seconds": 3.79,
+   "bytes": 15597,
+   "hash": "56eb44eaa4f2"
+  },
+  "security.warn.1": {
+   "seconds": 3.54,
+   "bytes": 14637,
+   "hash": "0c5146c360db"
+  },
+  "security.warn.3": {
+   "seconds": 4.56,
+   "bytes": 18765,
+   "hash": "9a1415be2eb4"
+  },
+  "security.warn.2": {
+   "seconds": 4.37,
+   "bytes": 17997,
+   "hash": "1bb236e9f2f4"
+  },
+  "security.warn.4": {
+   "seconds": 3.11,
+   "bytes": 12909,
+   "hash": "c694ba4eaa3a"
+  },
+  "security.confirm_priority.1": {
+   "seconds": 2.41,
+   "bytes": 10125,
+   "hash": "55c8e6f2bc55"
+  },
+  "security.confirm_priority.2": {
+   "seconds": 2.45,
+   "bytes": 10317,
+   "hash": "62aae5508675"
+  },
+  "security.report_success.2": {
+   "seconds": 2.27,
+   "bytes": 9549,
+   "hash": "5eb1a2ee22e9"
+  },
+  "security.report_success.1": {
+   "seconds": 3.31,
+   "bytes": 13773,
+   "hash": "cbed2601ab05"
+  },
+  "security.confirm_priority.3": {
+   "seconds": 2.74,
+   "bytes": 11469,
+   "hash": "71f4b299a75e"
+  },
+  "security.report_success.3": {
+   "seconds": 2.8,
+   "bytes": 11661,
+   "hash": "6b96e6aab95f"
+  },
+  "security.report_success.4": {
+   "seconds": 2.48,
+   "bytes": 10413,
+   "hash": "fe4809141659"
+  },
+  "security.report_success.5": {
+   "seconds": 1.7,
+   "bytes": 7245,
+   "hash": "c1da4c5596a5"
+  },
+  "security.report_partial.1": {
+   "seconds": 3.31,
+   "bytes": 13677,
+   "hash": "6def36dcdbe5"
+  },
+  "security.report_partial.3": {
+   "seconds": 2.46,
+   "bytes": 10317,
+   "hash": "eed3d69d7e4f"
+  },
+  "security.report_partial.2": {
+   "seconds": 3.05,
+   "bytes": 12717,
+   "hash": "901b63f540c4"
+  },
+  "security.report_partial.4": {
+   "seconds": 2.45,
+   "bytes": 10221,
+   "hash": "b3f8d58a4c03"
+  },
+  "security.report_failure.1": {
+   "seconds": 2.82,
+   "bytes": 11757,
+   "hash": "e65c5562bcf7"
+  },
+  "security.report_failure.2": {
+   "seconds": 2.11,
+   "bytes": 8877,
+   "hash": "f4a56f16e817"
+  },
+  "security.report_failure.3": {
+   "seconds": 2.76,
+   "bytes": 11565,
+   "hash": "0d5973db1488"
+  },
+  "security.report_failure.4": {
+   "seconds": 2.54,
+   "bytes": 10605,
+   "hash": "357b0b782250"
+  },
+  "security.report_unexpected.1": {
+   "seconds": 2.44,
+   "bytes": 10221,
+   "hash": "04fdc14f7706"
+  },
+  "security.report_unexpected.2": {
+   "seconds": 2.01,
+   "bytes": 8493,
+   "hash": "bbb61613a478"
+  },
+  "security.report_unexpected.3": {
+   "seconds": 2.53,
+   "bytes": 10605,
+   "hash": "22f7d0b28923"
+  },
+  "security.challenge_precedent.1": {
+   "seconds": 3.99,
+   "bytes": 16461,
+   "hash": "791d7f9eb407"
+  },
+  "security.challenge_precedent.2": {
+   "seconds": 4.29,
+   "bytes": 17613,
+   "hash": "e1b93f0ed69b"
+  },
+  "security.challenge_precedent.3": {
+   "seconds": 4.69,
+   "bytes": 19245,
+   "hash": "b72b8a136b16"
+  },
+  "security.request_exception.1": {
+   "seconds": 3.23,
+   "bytes": 13389,
+   "hash": "064da4ea8f33"
+  },
+  "security.request_exception.2": {
+   "seconds": 3.13,
+   "bytes": 13005,
+   "hash": "b800b77a8330"
+  },
+  "security.routine.2": {
+   "seconds": 2.21,
+   "bytes": 9261,
+   "hash": "4e323b8a754d"
+  },
+  "security.routine.1": {
+   "seconds": 1.86,
+   "bytes": 7917,
+   "hash": "60e98c8815c7"
+  },
+  "security.routine.3": {
+   "seconds": 1.99,
+   "bytes": 8397,
+   "hash": "17f3e32850c4"
+  },
+  "logistics.acknowledge.1": {
+   "seconds": 3.28,
+   "bytes": 13581,
+   "hash": "4063a6b7e7fa"
+  },
+  "logistics.acknowledge.2": {
+   "seconds": 3.62,
+   "bytes": 14925,
+   "hash": "21128e6bd1e4"
+  },
+  "logistics.acknowledge.3": {
+   "seconds": 3.28,
+   "bytes": 13581,
+   "hash": "cd9974af89c7"
+  },
+  "logistics.acknowledge.4": {
+   "seconds": 2.68,
+   "bytes": 11181,
+   "hash": "ea4e912b5e4a"
+  },
+  "logistics.acknowledge.5": {
+   "seconds": 3.01,
+   "bytes": 12525,
+   "hash": "2ce086a5de02"
+  },
+  "logistics.object.2": {
+   "seconds": 3.78,
+   "bytes": 15597,
+   "hash": "3227456cbb32"
+  },
+  "logistics.object.3": {
+   "seconds": 4.5,
+   "bytes": 18477,
+   "hash": "5c64930150cc"
+  },
+  "logistics.object.1": {
+   "seconds": 6.16,
+   "bytes": 25101,
+   "hash": "e975b4949397"
+  },
+  "logistics.object.4": {
+   "seconds": 4.16,
+   "bytes": 17133,
+   "hash": "78f3c5ab5174"
+  },
+  "logistics.warn.1": {
+   "seconds": 5.58,
+   "bytes": 22797,
+   "hash": "e2ed3d716850"
+  },
+  "logistics.warn.2": {
+   "seconds": 6.54,
+   "bytes": 26637,
+   "hash": "f2149803d0fe"
+  },
+  "logistics.warn.3": {
+   "seconds": 6.18,
+   "bytes": 25197,
+   "hash": "c294bec61d79"
+  },
+  "logistics.warn.4": {
+   "seconds": 5.59,
+   "bytes": 22797,
+   "hash": "880e74f1ad35"
+  },
+  "logistics.confirm_priority.1": {
+   "seconds": 5.6,
+   "bytes": 22893,
+   "hash": "30acb2dfb362"
+  },
+  "logistics.confirm_priority.2": {
+   "seconds": 5.32,
+   "bytes": 21741,
+   "hash": "293de20921e9"
+  },
+  "logistics.report_success.2": {
+   "seconds": 3.69,
+   "bytes": 15213,
+   "hash": "a42dda86748e"
+  },
+  "logistics.confirm_priority.3": {
+   "seconds": 5.15,
+   "bytes": 21069,
+   "hash": "a0e2e51f2ab8"
+  },
+  "logistics.report_success.1": {
+   "seconds": 4.29,
+   "bytes": 17613,
+   "hash": "8bdd8aa0a759"
+  },
+  "logistics.report_success.3": {
+   "seconds": 4.17,
+   "bytes": 17133,
+   "hash": "7fdfe83c8607"
+  },
+  "logistics.report_success.4": {
+   "seconds": 3.23,
+   "bytes": 13389,
+   "hash": "8a4183aab26d"
+  },
+  "logistics.report_success.5": {
+   "seconds": 3.59,
+   "bytes": 14829,
+   "hash": "2e370c043d74"
+  },
+  "logistics.report_partial.1": {
+   "seconds": 4.04,
+   "bytes": 16653,
+   "hash": "e4c57026758b"
+  },
+  "logistics.report_partial.2": {
+   "seconds": 5.15,
+   "bytes": 21069,
+   "hash": "fe73f44ea53b"
+  },
+  "logistics.report_partial.3": {
+   "seconds": 4.56,
+   "bytes": 18765,
+   "hash": "af60f4d8c2ac"
+  },
+  "logistics.report_partial.4": {
+   "seconds": 3.99,
+   "bytes": 16461,
+   "hash": "8e51c0990c22"
+  },
+  "logistics.report_failure.1": {
+   "seconds": 5.79,
+   "bytes": 23661,
+   "hash": "eccb124c640a"
+  },
+  "logistics.report_failure.3": {
+   "seconds": 4,
+   "bytes": 16461,
+   "hash": "84abb9221d85"
+  },
+  "logistics.report_failure.2": {
+   "seconds": 5.8,
+   "bytes": 23661,
+   "hash": "ed87c9a74569"
+  },
+  "logistics.report_failure.4": {
+   "seconds": 4.86,
+   "bytes": 19917,
+   "hash": "75d59beb330f"
+  },
+  "logistics.report_unexpected.1": {
+   "seconds": 4.64,
+   "bytes": 19053,
+   "hash": "6129bd40c1cf"
+  },
+  "logistics.report_unexpected.3": {
+   "seconds": 4.46,
+   "bytes": 18285,
+   "hash": "6343efcb841a"
+  },
+  "logistics.report_unexpected.2": {
+   "seconds": 4.63,
+   "bytes": 18957,
+   "hash": "233221ffe930"
+  },
+  "logistics.challenge_precedent.1": {
+   "seconds": 7.36,
+   "bytes": 29901,
+   "hash": "338c68115d30"
+  },
+  "logistics.challenge_precedent.3": {
+   "seconds": 6.5,
+   "bytes": 26445,
+   "hash": "5e516843d8da"
+  },
+  "logistics.challenge_precedent.2": {
+   "seconds": 7.01,
+   "bytes": 28461,
+   "hash": "06bed7f8693b"
+  },
+  "logistics.routine.1": {
+   "seconds": 2.9,
+   "bytes": 12045,
+   "hash": "cbfac434bc8f"
+  },
+  "logistics.request_exception.1": {
+   "seconds": 6.12,
+   "bytes": 24909,
+   "hash": "b86c86096ced"
+  },
+  "logistics.request_exception.2": {
+   "seconds": 6.02,
+   "bytes": 24525,
+   "hash": "ac3ff05fd33d"
+  },
+  "logistics.routine.3": {
+   "seconds": 4.46,
+   "bytes": 18285,
+   "hash": "e4b8e209ec8d"
+  },
+  "logistics.routine.2": {
+   "seconds": 4.63,
+   "bytes": 18957,
+   "hash": "258195e7438b"
+  },
+  "medical.acknowledge.1": {
+   "seconds": 1.46,
+   "bytes": 6285,
+   "hash": "998319da18f0"
+  },
+  "medical.acknowledge.2": {
+   "seconds": 2.32,
+   "bytes": 9741,
+   "hash": "622ab3d0114f"
+  },
+  "medical.acknowledge.4": {
+   "seconds": 3.39,
+   "bytes": 14061,
+   "hash": "c6ff0606efd6"
+  },
+  "medical.acknowledge.3": {
+   "seconds": 2,
+   "bytes": 8493,
+   "hash": "f3e049f95e6f"
+  },
+  "medical.acknowledge.5": {
+   "seconds": 2.43,
+   "bytes": 10221,
+   "hash": "8da38678065a"
+  },
+  "medical.object.1": {
+   "seconds": 3.96,
+   "bytes": 16269,
+   "hash": "f3688ee56745"
+  },
+  "medical.object.2": {
+   "seconds": 3.41,
+   "bytes": 14061,
+   "hash": "5511a60b5ae8"
+  },
+  "medical.object.3": {
+   "seconds": 5.78,
+   "bytes": 23565,
+   "hash": "71a913df340c"
+  },
+  "medical.object.4": {
+   "seconds": 3.89,
+   "bytes": 16077,
+   "hash": "43e31ba97fd2"
+  },
+  "medical.warn.1": {
+   "seconds": 4.59,
+   "bytes": 18861,
+   "hash": "feb9af2485da"
+  },
+  "medical.warn.4": {
+   "seconds": 4.59,
+   "bytes": 18861,
+   "hash": "e113fe89cb1e"
+  },
+  "medical.warn.2": {
+   "seconds": 5.28,
+   "bytes": 21645,
+   "hash": "65774bec05cd"
+  },
+  "medical.warn.3": {
+   "seconds": 5.82,
+   "bytes": 23757,
+   "hash": "429a13082195"
+  },
+  "medical.confirm_priority.1": {
+   "seconds": 4.97,
+   "bytes": 20397,
+   "hash": "6b9b8b2da03f"
+  },
+  "medical.confirm_priority.2": {
+   "seconds": 5.88,
+   "bytes": 23949,
+   "hash": "6668e7d14b79"
+  },
+  "medical.report_success.3": {
+   "seconds": 3.76,
+   "bytes": 15501,
+   "hash": "b8a81c8564be"
+  },
+  "medical.report_success.1": {
+   "seconds": 4.15,
+   "bytes": 17037,
+   "hash": "051c0308ec54"
+  },
+  "medical.confirm_priority.3": {
+   "seconds": 3.27,
+   "bytes": 13581,
+   "hash": "dd92ac7d2d69"
+  },
+  "medical.report_success.2": {
+   "seconds": 4.57,
+   "bytes": 18765,
+   "hash": "f57783888843"
+  },
+  "medical.report_success.4": {
+   "seconds": 3.8,
+   "bytes": 15693,
+   "hash": "e0e3b16efcca"
+  },
+  "medical.report_partial.3": {
+   "seconds": 2.87,
+   "bytes": 11949,
+   "hash": "f4eeae85f693"
+  },
+  "medical.report_success.5": {
+   "seconds": 5.42,
+   "bytes": 22125,
+   "hash": "dcdefbdc5fce"
+  },
+  "medical.report_partial.2": {
+   "seconds": 3.98,
+   "bytes": 16365,
+   "hash": "2d100376716b"
+  },
+  "medical.report_partial.1": {
+   "seconds": 3.74,
+   "bytes": 15405,
+   "hash": "3f8fcecd0fd2"
+  },
+  "medical.report_partial.4": {
+   "seconds": 3.2,
+   "bytes": 13293,
+   "hash": "2a428ad74e60"
+  },
+  "medical.report_failure.1": {
+   "seconds": 5.35,
+   "bytes": 21837,
+   "hash": "3f71377e97cd"
+  },
+  "medical.report_failure.3": {
+   "seconds": 4.74,
+   "bytes": 19437,
+   "hash": "9d2ec9a182b1"
+  },
+  "medical.report_failure.2": {
+   "seconds": 7.79,
+   "bytes": 31629,
+   "hash": "dd3468e5bff4"
+  },
+  "medical.report_unexpected.1": {
+   "seconds": 4.2,
+   "bytes": 17325,
+   "hash": "2a200c44a2ea"
+  },
+  "medical.report_failure.4": {
+   "seconds": 4.53,
+   "bytes": 18573,
+   "hash": "1af7c448a6ba"
+  },
+  "medical.report_unexpected.2": {
+   "seconds": 3.06,
+   "bytes": 12717,
+   "hash": "dc373fdddcf1"
+  },
+  "medical.report_unexpected.3": {
+   "seconds": 3.15,
+   "bytes": 13101,
+   "hash": "2ebfe225c02c"
+  },
+  "medical.challenge_precedent.3": {
+   "seconds": 5.48,
+   "bytes": 22413,
+   "hash": "e488b455a323"
+  },
+  "medical.challenge_precedent.1": {
+   "seconds": 5.88,
+   "bytes": 24045,
+   "hash": "954379c6dd05"
+  },
+  "medical.challenge_precedent.2": {
+   "seconds": 6.25,
+   "bytes": 25485,
+   "hash": "ae5332b892f7"
+  },
+  "medical.request_exception.1": {
+   "seconds": 4.93,
+   "bytes": 20205,
+   "hash": "b3dc1863cc00"
+  },
+  "medical.routine.2": {
+   "seconds": 3.84,
+   "bytes": 15885,
+   "hash": "e9bf37d1b6f6"
+  },
+  "medical.request_exception.2": {
+   "seconds": 5.44,
+   "bytes": 22221,
+   "hash": "24d754e2315e"
+  },
+  "medical.routine.1": {
+   "seconds": 4.22,
+   "bytes": 17325,
+   "hash": "1f3c0a63e7d4"
+  },
+  "medical.routine.3": {
+   "seconds": 4.05,
+   "bytes": 16653,
+   "hash": "1dadc7c2ea7c"
+  },
+  "engineering.acknowledge.1": {
+   "seconds": 4.48,
+   "bytes": 18381,
+   "hash": "c4db9a061d62"
+  },
+  "engineering.acknowledge.3": {
+   "seconds": 2.14,
+   "bytes": 9069,
+   "hash": "159910cb8336"
+  },
+  "engineering.acknowledge.2": {
+   "seconds": 3.7,
+   "bytes": 15309,
+   "hash": "7d9afbfb0727"
+  },
+  "engineering.acknowledge.4": {
+   "seconds": 5.66,
+   "bytes": 23085,
+   "hash": "ed2e0bcfe437"
+  },
+  "engineering.acknowledge.5": {
+   "seconds": 3.34,
+   "bytes": 13869,
+   "hash": "378812681eaf"
+  },
+  "engineering.object.2": {
+   "seconds": 5.65,
+   "bytes": 23085,
+   "hash": "4eb1ef8cd0dd"
+  },
+  "engineering.object.1": {
+   "seconds": 5.19,
+   "bytes": 21261,
+   "hash": "34025b13d193"
+  },
+  "engineering.object.3": {
+   "seconds": 6.07,
+   "bytes": 24717,
+   "hash": "6efddeccb959"
+  },
+  "engineering.object.4": {
+   "seconds": 5.65,
+   "bytes": 23085,
+   "hash": "6a124c09a056"
+  },
+  "engineering.warn.1": {
+   "seconds": 4.69,
+   "bytes": 19245,
+   "hash": "a688687de1f3"
+  },
+  "engineering.warn.2": {
+   "seconds": 6.18,
+   "bytes": 25197,
+   "hash": "5128dab8f6ed"
+  },
+  "engineering.warn.4": {
+   "seconds": 6.8,
+   "bytes": 27693,
+   "hash": "a9259f1855e4"
+  },
+  "engineering.warn.3": {
+   "seconds": 8.67,
+   "bytes": 35181,
+   "hash": "1b016e13401e"
+  },
+  "engineering.confirm_priority.1": {
+   "seconds": 7.16,
+   "bytes": 29133,
+   "hash": "f73f8903d6c0"
+  },
+  "engineering.confirm_priority.2": {
+   "seconds": 4.75,
+   "bytes": 19533,
+   "hash": "ce3e4625a592"
+  },
+  "engineering.report_success.1": {
+   "seconds": 4.03,
+   "bytes": 16557,
+   "hash": "081939db6800"
+  },
+  "engineering.confirm_priority.3": {
+   "seconds": 5.03,
+   "bytes": 20589,
+   "hash": "61d27f47815f"
+  },
+  "engineering.report_success.2": {
+   "seconds": 5.49,
+   "bytes": 22413,
+   "hash": "7a4b15ada146"
+  },
+  "engineering.report_success.4": {
+   "seconds": 4.37,
+   "bytes": 17997,
+   "hash": "ca73bffc8110"
+  },
+  "engineering.report_success.3": {
+   "seconds": 4.66,
+   "bytes": 19149,
+   "hash": "810246e9f0ba"
+  },
+  "engineering.report_success.5": {
+   "seconds": 4.38,
+   "bytes": 17997,
+   "hash": "da0503f834da"
+  },
+  "engineering.report_partial.3": {
+   "seconds": 4.15,
+   "bytes": 17133,
+   "hash": "95a2e7ead75b"
+  },
+  "engineering.report_partial.2": {
+   "seconds": 4.66,
+   "bytes": 19149,
+   "hash": "a09b57906e69"
+  },
+  "engineering.report_partial.1": {
+   "seconds": 5.58,
+   "bytes": 22797,
+   "hash": "6389838ac9ae"
+  },
+  "engineering.report_partial.4": {
+   "seconds": 6.26,
+   "bytes": 25485,
+   "hash": "eb3135bcfbd7"
+  },
+  "engineering.report_failure.1": {
+   "seconds": 6.03,
+   "bytes": 24621,
+   "hash": "e43787bb4485"
+  },
+  "engineering.report_failure.3": {
+   "seconds": 6.02,
+   "bytes": 24525,
+   "hash": "df2e8f6aefe3"
+  },
+  "engineering.report_failure.2": {
+   "seconds": 3.83,
+   "bytes": 15789,
+   "hash": "5be8931d4bcf"
+  },
+  "engineering.report_unexpected.1": {
+   "seconds": 4.05,
+   "bytes": 16653,
+   "hash": "1d49da5d0a32"
+  },
+  "engineering.report_failure.4": {
+   "seconds": 4.7,
+   "bytes": 19245,
+   "hash": "427861379117"
+  },
+  "engineering.report_unexpected.2": {
+   "seconds": 4.56,
+   "bytes": 18669,
+   "hash": "7ba1f4b737d9"
+  },
+  "engineering.report_unexpected.3": {
+   "seconds": 6.14,
+   "bytes": 25005,
+   "hash": "ae0eb39e4536"
+  },
+  "engineering.challenge_precedent.1": {
+   "seconds": 7.4,
+   "bytes": 30093,
+   "hash": "eebc3f59e412"
+  },
+  "engineering.challenge_precedent.3": {
+   "seconds": 8.43,
+   "bytes": 34221,
+   "hash": "22ea0f6c320f"
+  },
+  "engineering.challenge_precedent.2": {
+   "seconds": 7.12,
+   "bytes": 28941,
+   "hash": "ddbefe1a3f47"
+  },
+  "engineering.request_exception.1": {
+   "seconds": 6.01,
+   "bytes": 24525,
+   "hash": "bfbfce5f7008"
+  },
+  "engineering.routine.1": {
+   "seconds": 3.82,
+   "bytes": 15789,
+   "hash": "b036093f0a5a"
+  },
+  "engineering.request_exception.2": {
+   "seconds": 8.08,
+   "bytes": 32781,
+   "hash": "f4a3939e3856"
+  },
+  "engineering.routine.2": {
+   "seconds": 5.82,
+   "bytes": 23757,
+   "hash": "e1d2c798030f"
+  },
+  "engineering.routine.3": {
+   "seconds": 4.98,
+   "bytes": 20397,
+   "hash": "e10639c3a4af"
+  },
+  "security.clarify.target": {
+   "seconds": 2.85,
+   "bytes": 11853,
+   "hash": "1592e9262756"
+  },
+  "security.clarify.resource_precedence": {
+   "seconds": 4.7,
+   "bytes": 19245,
+   "hash": "a630efe043db"
+  },
+  "security.clarify.scope": {
+   "seconds": 4.9,
+   "bytes": 20109,
+   "hash": "4d1918973058"
+  },
+  "security.clarify.standing_order": {
+   "seconds": 3.7,
+   "bytes": 15309,
+   "hash": "575291564afd"
+  },
+  "security.clarify.precedent": {
+   "seconds": 3.48,
+   "bytes": 14349,
+   "hash": "4cb6df3d3afe"
+  },
+  "security.clarify.contradiction": {
+   "seconds": 4.01,
+   "bytes": 16557,
+   "hash": "bcfa56ad79c8"
+  },
+  "logistics.clarify.resource_precedence": {
+   "seconds": 6.24,
+   "bytes": 25485,
+   "hash": "04904313d99e"
+  },
+  "logistics.clarify.target": {
+   "seconds": 6.76,
+   "bytes": 27501,
+   "hash": "a6ea6d2fe593"
+  },
+  "logistics.clarify.standing_order": {
+   "seconds": 5.37,
+   "bytes": 21933,
+   "hash": "054040534249"
+  },
+  "logistics.clarify.scope": {
+   "seconds": 7.3,
+   "bytes": 29709,
+   "hash": "f8e409676d4b"
+  },
+  "logistics.clarify.precedent": {
+   "seconds": 7.01,
+   "bytes": 28557,
+   "hash": "35036e57d6af"
+  },
+  "medical.clarify.resource_precedence": {
+   "seconds": 5.23,
+   "bytes": 21357,
+   "hash": "c51ac74be466"
+  },
+  "logistics.clarify.contradiction": {
+   "seconds": 5.71,
+   "bytes": 23373,
+   "hash": "ac278c8010cb"
+  },
+  "medical.clarify.target": {
+   "seconds": 4.92,
+   "bytes": 20205,
+   "hash": "2c76f438fe86"
+  },
+  "medical.clarify.scope": {
+   "seconds": 6.53,
+   "bytes": 26637,
+   "hash": "1ac2ab2fc17a"
+  },
+  "medical.clarify.standing_order": {
+   "seconds": 4.61,
+   "bytes": 18957,
+   "hash": "882f435c6540"
+  },
+  "medical.clarify.precedent": {
+   "seconds": 6.1,
+   "bytes": 24909,
+   "hash": "d237e7391a86"
+  },
+  "medical.clarify.contradiction": {
+   "seconds": 5.49,
+   "bytes": 22413,
+   "hash": "93ba180dbf8d"
+  },
+  "engineering.clarify.resource_precedence": {
+   "seconds": 7.55,
+   "bytes": 30669,
+   "hash": "6316a8987900"
+  },
+  "engineering.clarify.target": {
+   "seconds": 11.09,
+   "bytes": 44781,
+   "hash": "92f6e694ff14"
+  },
+  "engineering.clarify.scope": {
+   "seconds": 8.92,
+   "bytes": 36141,
+   "hash": "7c67565f2f38"
+  },
+  "engineering.clarify.precedent": {
+   "seconds": 6.1,
+   "bytes": 24909,
+   "hash": "c1f191d789a4"
+  },
+  "engineering.clarify.standing_order": {
+   "seconds": 8.53,
+   "bytes": 34605,
+   "hash": "318081c16b9e"
+  },
+  "engineering.clarify.contradiction": {
+   "seconds": 7.22,
+   "bytes": 29325,
+   "hash": "a716bf35bfbd"
+  }
+ }
+}

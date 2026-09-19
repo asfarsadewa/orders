@@ -1,0 +1,57 @@
+# Decisions
+
+A log of choices made and why. Add to it; do not rewrite history. The spec (`ORDERS_SPEC.md`) is the intent; this file is what was actually decided when the intent met the machine.
+
+## 2026-09-19
+
+**D1. The model understands, the game decides.** One Jev request per order, about fifty typed questions over a compact state, answered with calibrated probabilities. Nothing that Jev returns is an action, a casualty, a resource change or a line of dialogue. Every one of those is computed by code from the measurements, the officer's doctrine, the order ledger and the world. Why: the spec's thesis, and the same rule that made human-compiler and werewolf honest.
+
+**D2. Same stack and conventions as werewolf and human-compiler.** Cloudflare Worker with static assets via `@cloudflare/vite-plugin`, React 19, Vite, TypeScript, Vitest, `@typesafe-ai/sdk` server-side only, Turnstile once per run then an HMAC session token, rate limits by session and by IP, `wrangler secret put` from stdin. Single package: `src/engine`, `src/judge`, `src/content`, `src/client`, `src/worker`, `scripts`, `test`. Why: proven, and the three projects should feel like siblings.
+
+**D3. ORDERS has its own look: a dark command post.** Near-black cool background, bone-white ink, IBM Plex Mono for everything, Xanh Mono for the wordmark only; amber is the command colour (cursor, active officer, warnings), red is critical, green is acknowledged, blue is a note. No rounded corners, no gradients, 21px rhythm, controls in a row share one box height. Dark only; a colony at night has no light mode. Why: the text box is the control surface and a terminal is the honest frame for it; the sibling projects' paper look belongs to reading, not to a night watch.
+
+**D4. Canonical setting: Vesper Station.** A frontier colony of 184 people on a cold plateau after a systems collapse, with five operational areas: A Core (reactor hall, batteries, command), B Habitat (housing, the people), C Works (water pumps, fuel depot, vehicles), D Infirmary, and the Perimeter (gate, road, the pass). Why: power, water, food, medicine, fuel, shelter, security, morale and population are all immediately legible, and cold makes cascades physical (unheated pipes freeze).
+
+**D5. A day is a command cycle; a run is fourteen days.** Each day the player writes up to three orders. Each is measured once on submit and every officer answers at once with an authored acknowledgement, objection or request for clarification. Execution happens when the player ends the day: officers pick actions simultaneously, shared resources are allocated, the world ticks through the night, and the morning report opens the debrief. Why: simultaneous orders and resource contention need a batch; acknowledgements on submit keep the writing loop alive.
+
+**D6. Officers work even without orders.** Each department has a routine (Ilya patrols, Chen distributes rations, Vale treats, Orlov maintains) and a crisis response gated by initiative. An order redirects them; silence does not stop them. Why: a colony that only moves when spoken to is not a colony, and the player's first lesson is what Ilya does when nobody tells him not to.
+
+**D7. Officer choice is an explicit, additive utility over a finite action library.** `utility = objective match + priority match (weighted by doctrine) + precedent + standing orders + feasibility + urgency response + initiative − risk × risk aversion − ambiguity penalty − contradiction penalty`. Every term is recorded with its inputs and the trace shows them as `= note:` lines. Why: the debrief has to be able to answer "why did they do that" with numbers.
+
+**D8. Clarification is an action that costs a day.** When clarity is low and the officer is literal and low-initiative, or when a standing order or precedent contradicts the order for an officer who weighs precedent, the officer asks an authored question instead of acting, and performs only their routine that day. The player may answer with one of the three orders; the answer is measured against the pending question (`answers_pending[i]`). Why: a vague order should create delay more often than the wrong action.
+
+**D9. Resource contention is resolved by explicit priority, then initiative.** Actions declare requests for fuel, vehicles, crew hours, power and medicine. When requests exceed stock, the day's orders' priority measurements decide precedence; without one, higher initiative claims first and the rest execute partially. The allocation is recorded per action. Why: two individually sensible orders should collide in the world in ways the trace can explain.
+
+**D10. Standing orders are measured, not parsed.** An order with `is_standing_order` above threshold becomes a standing order carrying its own measurement vector and a scope of departments. Each active standing order (up to six) gets two per-item Nouls on every later order: `so_i_conflict` and `so_i_override`. Precedent is a per-department decayed average of past priority measurements, weighted into utility by the officer's `precedent_weight`. Why: memory as numbers, so yesterday's command changes today's execution for reasons the trace can show.
+
+**D11. Trust is rule-based and modifies willingness, never obedience at random.** Trust per officer moves on contradictions, crew casualties from orders, ignored clarifications, clear successful orders and honoured commitments. It scales discretion, clarification willingness and precedent weight. Why: the spec's Stage 7, kept explainable.
+
+**D12. Dialogue is authored and selected deterministically.** Each officer has a line library keyed by speech act and situation; the engine picks a line with a seeded generator, and specifics (numbers, sectors, resources) are rendered by code under the line as `= note:` lines, never inside it. Jev is not used to choose among candidate lines. Why: the category is a policy decision and the variant is style; a seeded pick keeps replay exact, costs nothing, and lets every line be voice-acted once. The spec calls Jev candidate selection optional; it can be added later without touching the engine.
+
+**D13. Presentation is generated once by scripts and committed.** Portraits and key art from gpt-image-2.5-sunburst, voice from Gemini TTS, sound effects from ElevenLabs, music from Lyria 3.5, all produced by `scripts/` with prompts and provenance in `public/*/PROMPTS.md`. No 3D: the map is a code-drawn schematic driven by state, which is more legible than a rendered scene and costs nothing at runtime. Why: same reason as werewolf D11, and a schematic map is the honest representation of a simulation.
+
+**D14. Deterministic replay.** A run is `seed + scenario + ordered stream of (order, measurements)`. Replaying it reproduces every action, allocation, casualty, report line and ending. It is the save format (localStorage), the test fixture format and the replay view. Why: werewolf D9.
+
+**D15. Three modes.** Analyst shows the full vector on submit; Commander (default) shows officer summaries on submit and the full trace after execution; Iron Command shows only authored responses and consequences until the run ends. Why: the spec's difficulty modes, with the default chosen to keep uncertainty during play.
+
+**D16. Endings are computed from accumulated state.** At day fourteen, or earlier on total loss or evacuation, the ending is chosen from population alive, infrastructure stability, resource security, morale, mission state and officer confidence: Colony survives, Pyrrhic survival, Evacuation, Infrastructure collapse, Mutiny, Abandonment, Total loss. Why: no single final choice, no binary.
+
+**D17. Engine tests never call Jev.** Fixture measurements are hand-written vectors; the judge is exercised by `npm run calibrate` against an authored corpus with human-labelled expectations, and the report is committed as `docs/CALIBRATION.md`. Thresholds are engine constants in one file and are tested. Why: the spec's Stage 1 and section 38.
+
+## Open
+
+- Whether clarification answers should cost one of the three orders (current) or be free.
+- Whether hidden doctrine numbers should be revealed in the post-run report.
+- Jev candidate selection for report lines (D12) once the library is large enough to need it.
+
+## 2026-09-19, later
+
+**D18. Clarification is a threshold on need, not a contest with utility.** The first build compared an officer's need to ask against the best action's utility; the scales are unrelated and nobody ever asked. Now the need (low clarity, an unnamed target, a contradiction, two resources with no precedence, a standing order or a precedent in the way, each scaled by literalness, reduced by initiative and trust, relieved a little by a confidently understood objective) crosses `W.clarifyFloor` on its own. On the same vague order Chen asks and Ilya guesses, which is the spec's lesson. Why: the spec's rule is about the officer, not about the alternatives.
+
+**D19. An unanswered question holds the officer to routine.** If the player does not answer by the end of the day the officer performs only the department routine, trust drops, and the question expires. Why: a vague order should create delay more often than the wrong action, and the delay has to be visible and cost something.
+
+**D20. No-op actions are infeasible.** An action whose only effect is already the case (holding a reserve that is held, prioritising a sector that has priority) is blocked, so an officer never "does" nothing and calls it done. Why: the first playtest showed Orlov reporting success on holding a battery nobody had touched.
+
+**D21. Balance is tuned from the effect log, not from taste.** `scripts/morale.ts` sums every recorded morale effect and every death by its sentence across seeded runs. The first pass found a colony that could not heat itself on day one and a morale that fell six points a night with nothing happening; heating now scales with the cold, the generator starts a little healthier, minimal rations and unresolved crises cost less, a warm night with full plates earns a little, and mutiny needs three days below the line. A careful scripted commander now reaches day fourteen almost always and survives outright about a tenth of the time; silence ends in mutiny or a pyrrhic survival; vagueness ends in mutiny. Human playtests will move these again. Why: the numbers have to be defended with the same honesty the trace demands.
+
+**D22. Voice is one clip per authored line, keyed by line id.** 184 clips from Gemini TTS; officers address only the commander, so no vocative clips are needed. The character description and the delivery per speech act are the whole prompt. Why: werewolf D12, simpler.
