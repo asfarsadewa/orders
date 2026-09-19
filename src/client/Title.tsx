@@ -39,7 +39,7 @@ export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHe
         </h2>
       </div>
       <p className="lead">
-        You command Vesper Station, a colony of 184 people, for 14 days after a systems failure. You write orders in plain text to four officers, up to three orders each day. A calibrated model measures each order. Each officer applies a different doctrine to the same measurement and selects one action. After each day, the trace shows the numbers behind each action.
+        You command Vesper Station, a colony of 184 people, for 14 days after a systems failure. You write orders in plain text to four officers. You can write up to three orders each day. A calibrated model measures each order. Each officer applies a different doctrine to the same measurement. Each officer selects one action. After each day, the trace shows the numbers behind each action.
       </p>
       <div className="keyart">
         <img src="/art/keyart.jpg" alt="Vesper Station on a cold plateau at dusk, lit windows against snow" width={1536} height={640} onError={(e) => ((e.currentTarget.parentElement as HTMLElement).style.display = "none")} />
@@ -82,7 +82,7 @@ export function Title({ siteKey, busy, error, canResume, onStart, onResume, onHe
         <div ref={slot} className="turnstile-slot" />
         {(error || localError || turnstile.state === "error") && <div className="red">{error ?? localError ?? "Verification did not load. Reload the page."}</div>}
         <div className="dim" style={{ fontSize: 12, lineHeight: "18px" }}>
-          You complete one verification for each run. The server holds the model key and measures your orders. The server logs the request size and time, not the order text. The game runs in this tab and saves to this tab. There is no account.
+          You complete one verification for each run. The server holds the model key and measures your orders. The server logs the request size and time. The server does not log the order text. The game runs in this tab. The save stays in this tab. There is no account.
         </div>
       </div>
     </div>

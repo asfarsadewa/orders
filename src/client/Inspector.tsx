@@ -118,7 +118,7 @@ export function Inspector({ state, target, onClose }: { state: GameState; target
           </section>
           <section>
             <h4>orders this day for {department}</h4>
-            {orders.length === 0 && <div className="dim">None. The officer acted on initiative or routine.</div>}
+            {orders.length === 0 && <div className="dim">No orders. The officer acted on initiative or routine.</div>}
             {orders.map((o) => (
               <div key={o.id} style={{ marginBottom: 10 }}>
                 <div>
@@ -170,7 +170,7 @@ export function Inspector({ state, target, onClose }: { state: GameState; target
           </section>
           <section>
             <h4>decision</h4>
-            {decision ? <DecisionTrace d={decision} /> : <div className="dim">{day === state.day ? "Not executed yet. End the day to see the action." : "No record."}</div>}
+            {decision ? <DecisionTrace d={decision} /> : <div className="dim">{day === state.day ? "The day has not ended. End the day to see the action." : "No record."}</div>}
           </section>
         </>
       )}

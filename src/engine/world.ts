@@ -233,11 +233,11 @@ export function nightTick(w: World, rec: Recorder, ctx: NightContext): void {
     fuel = 0;
     change(w, rec, "power.output", r3(generatorOutput(w) * part), `Fuel ran out. The generator ran at ${Math.round(part * 100)}% of its output.`);
   } else {
-    change(w, rec, "power.output", generatorOutput(w), w.power.isolated > 0 ? "The generator is isolated. Output is capped at 40%." : "Generator output for the night.");
+    change(w, rec, "power.output", generatorOutput(w), w.power.isolated > 0 ? "The generator is isolated. Output cannot exceed 40%." : "Generator output for the night.");
   }
   change(w, rec, "fuel.units", r3(fuel), `Night fuel: generator ${genFuelled ? genNeed : 0}, pumps ${pumpsFuelled ? pumpsWant : 0}.`);
   change(w, rec, "water.pumpsFuelled", pumpsFuelled, pumpsFuelled ? "Pumps ran on fuel." : "No fuel set aside for the pumps.");
-  change(w, rec, "fuel.reservedForPumps", false, "The night's fuel reservation is spent.");
+  change(w, rec, "fuel.reservedForPumps", false, "The night used the fuel reservation.");
   if (w.power.isolated > 0) change(w, rec, "power.isolated", w.power.isolated - 1, "One more night of isolation done.");
 
   // 2. Power balance: base load plus heating; battery bridges only if allowed; cut sectors in order.
@@ -262,7 +262,7 @@ export function nightTick(w: World, rec: Recorder, ctx: NightContext): void {
   const powered = deficit <= 0.001;
   for (const s of ["core", "habitat", "works", "infirmary"] as SectorId[]) {
     const on = heated[s] && (heat[s] === undefined || powered || heated[s]);
-    change(w, rec, `sectors.${s}.heated`, weather.tempC >= PHYS.heatTemp ? true : on, on ? `${s} was heated overnight.` : `${s} was unheated. Supply was ${Math.round(supply * 100)}% of nominal against demand ${Math.round(demand * 100)}%.`);
+    change(w, rec, `sectors.${s}.heated`, weather.tempC >= PHYS.heatTemp ? true : on, on ? `${s} had heat overnight.` : `${s} had no heat. Supply was ${Math.round(supply * 100)}% of nominal against demand ${Math.round(demand * 100)}%.`);
   }
   const pumpsPowered = powered || (supply >= PHYS.baseLoad - (w.power.shedding ? PHYS.shedSaves : 0));
 
@@ -367,8 +367,8 @@ export function nightTick(w: World, rec: Recorder, ctx: NightContext): void {
     const toCritical = Math.round(w.people.trapped * PHYS.trapped.critical * coldFactor + rng.next() * 0.6);
     const n = Math.min(w.people.trapped, toInjured + toCritical);
     if (n > 0) {
-      add(w, rec, "people.trapped", -n, `${n} of the trapped ${n === 1 ? "was" : "were"} injured overnight. They are still trapped.`, 0);
-      add(w, rec, "people.injured", Math.min(n, toInjured), "Trapped colonists are injured.");
+      add(w, rec, "people.trapped", -n, `The cold injured ${n} of the trapped overnight. They are still trapped.`, 0);
+      add(w, rec, "people.injured", Math.min(n, toInjured), "Trapped colonists have injuries.");
       if (n - Math.min(n, toInjured) > 0) add(w, rec, "people.critical", n - Math.min(n, toInjured), "Trapped colonists are critical.");
       // Still under the rubble: count them as trapped again for rescue purposes.
       add(w, rec, "people.trapped", n, "The injured trapped are still trapped.");
@@ -385,13 +385,13 @@ export function nightTick(w: World, rec: Recorder, ctx: NightContext): void {
 
   // 10. The threat outside.
   const sec = w.security;
-  if (sec.contact === "unknown") add(w, rec, "security.threat", 0.05, "The contact outside is not identified. Threat increased.", 0, 1);
-  else if (sec.contact === "raiders") add(w, rec, "security.threat", sec.guarded ? -0.02 : 0.07, sec.guarded ? "The gate was guarded. Threat decreased." : "Raiders probed the fence. Threat increased.", 0, 1);
+  if (sec.contact === "unknown") add(w, rec, "security.threat", 0.05, "The contact outside is unknown. Threat increased.", 0, 1);
+  else if (sec.contact === "raiders") add(w, rec, "security.threat", sec.guarded ? -0.02 : 0.07, sec.guarded ? "Security guarded the gate. Threat decreased." : "Raiders probed the fence. Threat increased.", 0, 1);
   else if (sec.contact === "refugees") {
     add(w, rec, "security.threat", -0.03, "The refugees outside are waiting. Threat decreased.", 0, 1);
     if (sec.admitted === 0 && weather.tempC < -8) add(w, rec, "morale", -0.02, "Refugees remain outside the gate in the cold. Morale fell.", 0, 1);
   } else if (sec.contact === "relief") {
-    add(w, rec, "security.threat", -0.05, "The relief scouts are camped at the pass. Threat decreased.", 0, 1);
+    add(w, rec, "security.threat", -0.05, "The relief scouts camp at the pass. Threat decreased.", 0, 1);
     if (sec.reliefDay !== null && w.day + 1 >= sec.reliefDay && !w.roadOpen) change(w, rec, "roadOpen", true, "The relief column reached the pass. The road out is open.");
   }
   if ((sec.contact === "raiders" || sec.contact === "unknown") && w.security.threat > 0.6) {
@@ -401,7 +401,7 @@ export function nightTick(w: World, rec: Recorder, ctx: NightContext): void {
       add(w, rec, "fuel.units", -fuelLost, `Raid: ${fuelLost} fuel taken from the depot.`, 0);
       add(w, rec, "food.days", -0.8, "Raid: food stores looted.", 0);
       injure(w, rec, 2 + rng.int(3), "Raid: colonists hurt at the fence.");
-      add(w, rec, "security.perimeter", -0.15, "Raid: the fence was cut.", 0, 1);
+      add(w, rec, "security.perimeter", -0.15, "Raid: raiders cut the fence.", 0, 1);
       add(w, rec, "security.threat", -0.25, "The raiders withdrew. Threat decreased.", 0, 1);
       add(w, rec, "morale", -0.08, "The raid lowered morale.", 0, 1);
       if (sec.contact === "unknown") change(w, rec, "security.contact", "raiders", "The contact outside is raiders.");
@@ -414,7 +414,7 @@ export function nightTick(w: World, rec: Recorder, ctx: NightContext): void {
   if (deaths > 0) add(w, rec, "morale", -Math.min(0.12, deaths * 0.02), `${plural(deaths, "death")} in the night.`, 0, 1);
   if (w.power.shedding) add(w, rec, "morale", -0.01, "Load shedding lowered morale.", 0, 1);
   if (w.crises.length) add(w, rec, "morale", -Math.min(0.015, 0.005 * w.crises.length), `${plural(w.crises.length, "crisis", "crises")} unresolved. Morale fell.`, 0, 1);
-  if (w.sectors.habitat.heated && deaths === 0 && w.food.ration === "full" && w.water.days > 1) add(w, rec, "morale", 0.012, "The habitat was heated, rations were full and nobody died. Morale rose.", 0, 1);
+  if (w.sectors.habitat.heated && deaths === 0 && w.food.ration === "full" && w.water.days > 1) add(w, rec, "morale", 0.012, "The habitat had heat. Rations were full. Nobody died. Morale rose.", 0, 1);
   change(w, rec, "lowMoraleDays", w.morale < PHYS.mutinyLine ? w.lowMoraleDays + 1 : 0, w.morale < PHYS.mutinyLine ? "Morale below the mutiny line." : "Morale above the mutiny line.");
 }
 

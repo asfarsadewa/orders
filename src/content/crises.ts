@@ -106,7 +106,7 @@ export const CRISES: readonly CrisisTemplate[] = [
     once: true,
     requires: (w) => w.security.contact === "unknown" && w.security.threat < 0.5,
     onStart: (w, rec) => {
-      add(w, rec, "security.threat", 0.2, "Movement was seen outside the fence. Threat increased.", 0, 1);
+      add(w, rec, "security.threat", 0.2, "The watch saw movement outside the fence. Threat increased.", 0, 1);
     },
     resolved: (w) => w.security.contact !== "unknown",
     describe: (w) => `Perimeter: unknown movement outside the fence. Threat ${pct(w.security.threat)}.`,
@@ -149,7 +149,7 @@ export const CRISES: readonly CrisisTemplate[] = [
     requires: (w) => w.security.contact === "relief" && w.security.reliefDay === null && !w.security.reliefLost,
     onStart: () => undefined,
     resolved: (w) => w.security.reliefDay !== null || w.security.reliefLost,
-    describe: () => `Perimeter: scouts from a relief column are camped at the pass. Nobody has spoken to them.`,
+    describe: () => `Perimeter: scouts from a relief column camp at the pass. Nobody has spoken to them.`,
     concerns: ["security"],
   }),
   T({
@@ -177,7 +177,7 @@ export const CRISES: readonly CrisisTemplate[] = [
       if (c.neglect >= 2) add(w, rec, "water.pumpHealth", -0.08, "Ice split a pipe.", 0, 1);
     },
     resolved: (w) => !w.water.pipesFrozen,
-    describe: () => `Sector C, Works: pipes frozen. Pumping is halved until they are thawed.`,
+    describe: () => `Sector C, Works: pipes frozen. Pumping is at half until the pipes thaw.`,
     concerns: ["engineering"],
   }),
   T({
@@ -193,7 +193,7 @@ export const CRISES: readonly CrisisTemplate[] = [
       add(w, rec, "morale", -0.03, "The spoiled food lowered morale.", 0, 1);
     },
     resolved: () => true,
-    describe: () => `Sector C, Works: the cold store thawed. Food was lost.`,
+    describe: () => `Sector C, Works: the cold store thawed. The colony lost food.`,
     concerns: ["logistics"],
   }),
   T({
@@ -246,7 +246,7 @@ export const CRISES: readonly CrisisTemplate[] = [
     requires: (w) => w.fuel.units > 40 && !w.fuel.safe,
     onStart: (w, rec, rng) => {
       const lost = 8 + rng.int(8);
-      add(w, rec, "fuel.units", -lost, `A drum split in the depot. ${lost} fuel was lost.`, 0);
+      add(w, rec, "fuel.units", -lost, `A drum split in the depot. The depot lost ${lost} fuel.`, 0);
     },
     resolved: () => true,
     describe: () => `Sector C, Works: a fuel drum split in the depot.`,
@@ -523,7 +523,7 @@ export const CRISES: readonly CrisisTemplate[] = [
     requires: (w) => !w.sectors[w.medicine.ward].heated && w.people.critical > 0,
     onStart: () => undefined,
     resolved: (w) => w.sectors[w.medicine.ward].heated,
-    describe: (w) => `Sector D, Infirmary: the ward (${w.medicine.ward}) was unheated last night. ${w.people.critical} critical patients.`,
+    describe: (w) => `Sector D, Infirmary: the ward (${w.medicine.ward}) had no heat last night. ${w.people.critical} critical patients.`,
     concerns: ["engineering", "medical"],
   }),
 ];

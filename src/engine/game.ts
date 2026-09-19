@@ -102,7 +102,7 @@ export function applyOrder(state: GameState, text: string, measurements: Measure
     next.today.push(record);
     for (const d of scope.length ? scope : (["security", "logistics", "medical", "engineering"] as Department[]).slice(0, 1)) {
       const line = pickLine(next.seed, id, d, "routine");
-      utterances.push({ department: d, day: next.day, act: "routine", lineId: line.id, text: line.text, notes: [isQuestion(measurements) ? "= That was a question, not an order. The status board holds the answer." : "= That was not addressed to the colony."], orderId: id });
+      utterances.push({ department: d, day: next.day, act: "routine", lineId: line.id, text: line.text, notes: [isQuestion(measurements) ? "= This is a question. The status board shows the answer." : "= This is not an order to the colony."], orderId: id });
     }
     next.todayUtterances.push(...utterances);
     return next;
@@ -177,7 +177,7 @@ function reportUtterances(state: GameState, decisions: Decision[], crewCasualtie
     const unexpected = dec.effects.some((e) => e.path === "security.contact" || e.path === "security.reliefLost" || e.path.endsWith(".dead") || e.path === "vehicles.operational");
     if (dec.basis === "clarification") {
       act = "report_partial";
-      notes.push(state.pending.some((p) => p.department === d && p.day === dec.day && p.answeredBy) ? "= The question was answered. The officer acted on the answer." : "= No answer came. The officer held to routine.");
+      notes.push(state.pending.some((p) => p.department === d && p.day === dec.day && p.answeredBy) ? "= You answered the question. The officer acted on the answer." : "= No answer came. The officer held to routine.");
     } else if (dec.basis === "routine") {
       act = "routine";
     } else if (crewCasualties[d] > 0 || unexpected) {

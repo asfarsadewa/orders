@@ -38,7 +38,7 @@ export function evaluateEnding(state: GameState): Ending | null {
     return done("evacuation", `${w.people.evacuated} people reached the pass. The colony is empty.`);
   }
   if (w.power.generatorHealth < 0.15 && w.water.days < 0.5 && (over || w.fuel.units < 5)) {
-    return done("infrastructure_collapse", "The generator is dead and the water tanks are empty. The colony cannot last one more week.");
+    return done("infrastructure_collapse", "The generator is dead. The water tanks are empty. The colony cannot last one more week.");
   }
   if (!over) return null;
   if (dead >= 0.15 || infrastructure < 0.35 || resources < 0.18) {

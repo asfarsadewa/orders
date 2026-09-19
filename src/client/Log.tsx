@@ -78,7 +78,7 @@ function tone(e: Effect): string {
 }
 
 /** Bookkeeping lines the night sheet and the log both leave out. */
-export const HIDE_NIGHT = /settles toward|Night fuel:|reservation is spent|stands down at dawn|mutiny line\.$|Generator output for the night|One more night of isolation|^Night: /;
+export const HIDE_NIGHT = /settles toward|Night fuel:|used the fuel reservation|stands down at dawn|mutiny line\.$|Generator output for the night|One more night of isolation|^Night: /;
 
 /** Deduplicates the night's notes: one line per sentence. */
 export function nightLines(effects: Effect[]): { note: string; tone: string }[] {

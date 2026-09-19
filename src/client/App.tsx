@@ -141,7 +141,7 @@ export function App() {
             <button
               className="ctl ghost"
               onClick={() => {
-                if (window.confirm("Abandon this run? The save is deleted.")) {
+                if (window.confirm("Abandon this run? This deletes the save.")) {
                   run.abandon();
                   setView("title");
                 }

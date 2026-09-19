@@ -13,7 +13,7 @@ export function Help({ onClose }: { onClose(): void }) {
       <h3>the officers</h3>
       <ul>
         <li>
-          <b>Captain Ilya</b>, security. High initiative, low literalness, low risk aversion. He acts on the intent of an order, not on its exact words. Do not write <code>whatever it takes</code> or <code>at any cost</code> unless you accept casualties.
+          <b>Captain Ilya</b>, security. High initiative, low literalness, low risk aversion. He acts on the intent of an order. He does not act on the exact words. If you do not accept casualties, do not write <code>whatever it takes</code> or <code>at any cost</code>.
         </li>
         <li>
           <b>Chen</b>, logistics. High literalness, high resource caution. If an order needs two resources and does not rank them, she asks a question and waits for the answer. State which resource comes first.
@@ -33,12 +33,12 @@ export function Help({ onClose }: { onClose(): void }) {
         <li>Each officer scores every action in their library with a fixed formula. The formula uses the measurement and the officer's doctrine.</li>
         <li>The officer selects the action with the highest score. If the order is not clear enough, the officer asks a question instead.</li>
         <li>When you end the day, the selected actions share the fuel, the trucks, the crew hours and the medicine.</li>
-        <li>The night runs. The morning report shows each action and its effects.</li>
+        <li>The game simulates the night. The morning report shows each action and its effects.</li>
         <li>The inspector shows every number in the formula.</li>
       </ol>
       <h3>memory</h3>
       <p>
-        An order that sets a rule becomes a standing order. Examples: <code>from now on</code>, <code>never</code>, <code>standing order</code>. A standing order stays in force until you cancel it. Each order also records the priorities you stated. The record fades over the following days. An officer with high precedent weight asks a question if a new order conflicts with a standing order or with the record.
+        An order that sets a rule becomes a standing order. Examples: <code>from now on</code>, <code>never</code>, <code>standing order</code>. A standing order stays in force until you cancel it. Each order also records the priorities you stated. The record decays over the following days. An officer with high precedent weight checks each new order against the standing orders and the record. If there is a conflict, the officer asks a question.
       </p>
       <h3>modes</h3>
       <ul>
@@ -53,7 +53,7 @@ export function Help({ onClose }: { onClose(): void }) {
         </li>
       </ul>
       <h3>what the model does</h3>
-      <p>The model only measures the order. The game code selects every action and calculates every result. Every number in a result is visible in the inspector. If you find a result with no visible number behind it, report it as a bug.</p>
+      <p>The model only measures the order. The game code selects every action. The game code calculates every result. Every number in a result is visible in the inspector. If you find a result with no visible number behind it, report it as a bug.</p>
     </div>
   );
 }
