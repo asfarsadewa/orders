@@ -757,7 +757,6 @@ footer .x svg {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-  padding-bottom: 14px;
 }
 
 .officer .traits,
@@ -845,12 +844,13 @@ footer .x svg {
 }
 
 .officer .trust {
-  position: absolute;
-  right: 14px;
-  bottom: 8px;
+  grid-column: 2;
+  justify-self: end;
+  align-self: end;
   color: var(--dim);
   font-family: var(--mono);
   font-size: 11px;
+  line-height: 14px;
   font-stretch: 87.5%;
 }
 
