@@ -16,8 +16,7 @@
   "routes": [{ "pattern": "orders.asfarlab.fun", "custom_domain": true }],
   "vars": {
     // Turnstile site keys are public. The secret lives in the TURNSTILE_SECRET secret.
-    // Replaced with the real widget's key before the first production deploy.
-    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAE83S_FcNe-nFfpO",
     // Comma-separated hostnames that siteverify must report. Never localhost in production.
     "TURNSTILE_HOSTNAMES": "orders.asfarlab.fun"
   },
