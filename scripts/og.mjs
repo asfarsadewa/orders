@@ -1,6 +1,6 @@
 // Renders public/og.jpg (1200x630) for link previews from the key art, with
-// the wordmark, tagline and an officer-strip motif set in the game's own type
-// so the words are never left to the image model. Run with `npm run og`.
+// the wordmark, tagline, the meta description and an officer-strip motif set in
+// the game's own type so the words are never left to the image model. Run with `npm run og`.
 //
 // Fonts come from Google Fonts as static instances: the css2 endpoint serves
 // per-weight TrueType files to a legacy user agent, which is what the SVG
@@ -49,7 +49,7 @@ async function fonts() {
 
 const W = 1200;
 const H = 630;
-const BAND = 156;
+const BAND = 172;
 const C = { bg: "#0c0e0d", ink: "#e6e8e3", ink2: "#a8ada4", dim: "#8a9086", rule: "#2a2e2a", amber: "#eaaa08", green: "#75e0a7", blue: "#84adff" };
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const text = (x, y, t, { family = "Literata", size = 16, weight = 400, fill = C.ink, anchor = "start", spacing = 0 } = {}) =>
@@ -75,11 +75,12 @@ async function main() {
   <image href="${href}" x="0" y="0" width="${W}" height="${bandY}" preserveAspectRatio="xMidYMid slice"/>
   <rect x="0" y="${bandY}" width="${W}" height="${BAND}" fill="${C.bg}"/>
   <rect x="0" y="${bandY}" width="${W}" height="1" fill="${C.rule}"/>
-  ${text(44, bandY + 74, "ORDERS", { family: "Big Shoulders Display", size: 78, weight: 800, spacing: 5 })}
-  ${text(44, bandY + 106, "A command game where the enemy is what people think you meant.", { size: 19 })}
-  ${text(44, bandY + 132, "Write orders in plain text to four officers. A calibrated model measures each order. Doctrine decides each action.", { family: "Martian Mono", size: 12, weight: 500, fill: C.dim })}
+  ${text(44, bandY + 72, "ORDERS", { family: "Big Shoulders Display", size: 78, weight: 800, spacing: 5 })}
+  ${text(44, bandY + 104, "A command game where the enemy is what people think you meant.", { size: 19 })}
+  ${text(44, bandY + 130, "Write orders in plain text to four officers of a failing colony. A calibrated model measures what you meant.", { family: "Martian Mono", size: 12, weight: 500, fill: C.dim })}
+  ${text(44, bandY + 150, "Each officer's doctrine decides what they do.", { family: "Martian Mono", size: 12, weight: 500, fill: C.dim })}
   ${strip}
-  ${text(W - 44, bandY + 24, "ONE ORDER · THREE ACTIONS", { family: "Big Shoulders Text", size: 12, weight: 700, fill: C.dim, anchor: "end", spacing: 2 })}
+  ${text(W - 44, bandY + 24, "THE SAME ORDER", { family: "Big Shoulders Text", size: 12, weight: 700, fill: C.dim, anchor: "end", spacing: 2 })}
 </svg>`;
   const fontFiles = await fonts();
   const resvg = new Resvg(svg, { fitTo: { mode: "width", value: W }, font: { fontFiles, loadSystemFonts: false, defaultFontFamily: "Literata" } });
